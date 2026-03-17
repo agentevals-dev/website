@@ -1,0 +1,209 @@
+{{ define "main" }}
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
+    <img src="/images/logo-light.png" alt="AgentEvals" class="logo-light">
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">&#9776;</button>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#interfaces">Interfaces</a>
+    <a href="#get-started">Get Started</a>
+    <a href="/docs/">📚 Docs</a>
+    <a href="{{ .Site.Params.discord }}" target="_blank">💬 Discord</a>
+    <a href="{{ .Site.Params.github }}" target="_blank" class="btn-sm">⭐ GitHub</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="icon-sun">☀️</span>
+      <span class="icon-moon">🌙</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-logo">
+      <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
+      <img src="/images/logo-color-transparent.png" alt="AgentEvals" class="logo-light">
+    </div>
+    <h1>Score Agent Behavior from <span class="highlight">OpenTelemetry Traces</span></h1>
+    <p>Evaluate agents without re-running them. Parse OTLP streams and Jaeger JSON traces, then evaluate against golden eval sets using ADK's evaluation framework.</p>
+    <div class="hero-buttons">
+      <a href="{{ .Site.Params.github }}" target="_blank" class="btn btn-primary">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="{{ .Site.Params.discord }}" target="_blank" class="btn btn-secondary">
+        💬 Join Discord
+      </a>
+      <a href="#get-started" class="btn btn-secondary">🚀 Quick Start</a>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="container">
+  <div class="section-header">
+    <h2>✨ Why AgentEvals?</h2>
+    <p>Evaluate agent behavior from real traces, not synthetic replays.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>Trace-Based Evaluation</h3>
+      <p>Parse OTLP streams and Jaeger JSON traces to evaluate agent behavior directly from production or test telemetry data.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>No Re-Running Required</h3>
+      <p>Score agent behavior from existing traces. No need to replay expensive LLM calls or wait for agent re-execution.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Golden Eval Sets</h3>
+      <p>Define expected behaviors as golden eval sets and score traces against them using ADK's evaluation framework.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Trajectory Matching</h3>
+      <p>Compare agent trajectories with strict, unordered, subset, or superset matching modes for flexible evaluation.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>LLM-as-Judge</h3>
+      <p>Use LLM-powered evaluation for nuanced scoring of agent behavior without requiring reference trajectories.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛠️</div>
+      <h3>CI/CD Integration</h3>
+      <p>Run evaluations in your pipeline with the CLI. Gate deployments on agent behavior quality scores.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <h2>⚙️ How It Works</h2>
+      <p>Three steps from traces to scores.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>📡 Collect Traces</h3>
+        <p>Instrument your agent with OpenTelemetry or export Jaeger JSON traces from your observability platform.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>📝 Define Eval Sets</h3>
+        <p>Create golden evaluation sets that describe expected agent behaviors, tool calls, and trajectories.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>✅ Score &amp; Report</h3>
+        <p>Run evaluations via CLI, Web UI, or MCP server. Get detailed scores and pass/fail results.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interfaces -->
+<section id="interfaces" class="interfaces">
+  <div class="container">
+    <div class="section-header">
+      <h2>🔌 Three Ways to Evaluate</h2>
+      <p>Choose the interface that fits your workflow.</p>
+    </div>
+    <div class="interfaces-grid">
+      <div class="interface-card">
+        <div class="interface-icon">⌨️</div>
+        <h3>CLI</h3>
+        <p>Script evaluations and integrate into CI/CD pipelines. Pipe in traces, get scores out. Built for automation.</p>
+      </div>
+      <div class="interface-card">
+        <div class="interface-icon">🖥️</div>
+        <h3>Web UI</h3>
+        <p>Visually inspect traces and interactively evaluate agent behavior. Browse results, compare runs, and drill into details.</p>
+      </div>
+      <div class="interface-card">
+        <div class="interface-icon">🧩</div>
+        <h3>MCP Server</h3>
+        <p>Run evaluations directly from Claude Code conversations. The MCP server integrates agentevals into your AI workflow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Get Started -->
+<section id="get-started" class="code-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>🚀 Get Started</h2>
+      <p>Up and running in seconds.</p>
+    </div>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="code-label">terminal</span>
+      </div>
+      <div class="code-body">
+<pre><span class="comment"># Install agentevals</span>
+<span class="cmd">pip</span> install agentevals
+
+<span class="comment"># Or with npm</span>
+<span class="cmd">npm</span> install agentevals
+
+<span class="comment"># Run an evaluation against a trace file</span>
+<span class="cmd">agentevals</span> eval <span class="flag">--trace</span> <span class="string">./traces/agent-run.json</span> \
+  <span class="flag">--eval-set</span> <span class="string">./evals/golden.yaml</span>
+
+<span class="comment"># Start the web UI</span>
+<span class="cmd">agentevals</span> ui
+
+<span class="comment"># Start the MCP server for Claude Code</span>
+<span class="cmd">agentevals</span> mcp-server</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-content">
+    <h2>🎉 Start Evaluating Your Agents</h2>
+    <p>Open source. Trace-driven. No re-runs needed.</p>
+    <div class="cta-buttons">
+      <a href="{{ .Site.Params.github }}" target="_blank" class="btn btn-primary">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        ⭐ GitHub
+      </a>
+      <a href="{{ .Site.Params.discord }}" target="_blank" class="btn btn-secondary">
+        💬 Join Discord
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <a href="/" class="footer-logo">
+      <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
+      <img src="/images/logo-light.png" alt="AgentEvals" class="logo-light">
+    </a>
+    <div class="footer-links">
+      <a href="{{ .Site.Params.github }}" target="_blank">GitHub</a>
+      <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
+      <a href="https://github.com/agentregistry-dev/" target="_blank">AgentRegistry</a>
+    </div>
+    <span class="footer-copy">&copy; {{ now.Year }} AgentEvals. Open source under Apache 2.0.</span>
+  </div>
+</footer>
+
+{{ end }}

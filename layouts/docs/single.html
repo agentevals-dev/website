@@ -1,0 +1,56 @@
+{{ define "main" }}
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
+    <img src="/images/logo-color-transparent.png" alt="AgentEvals" class="logo-light">
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">&#9776;</button>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/docs/">Docs</a>
+    <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
+    <a href="{{ .Site.Params.github }}" target="_blank" class="btn-sm">GitHub</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="icon-sun">&#9728;</span>
+      <span class="icon-moon">&#9790;</span>
+    </button>
+  </div>
+</nav>
+
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="docs-sidebar-inner">
+      <h3>Documentation</h3>
+      <ul class="docs-nav">
+        {{ $currentPage := . }}
+        {{ range .Parent.Pages.ByWeight }}
+        <li><a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $currentPage.RelPermalink }}class="active"{{ end }}>{{ .Title }}</a></li>
+        {{ end }}
+      </ul>
+    </div>
+  </aside>
+  <main class="docs-main">
+    <div class="docs-content docs-article">
+      <h1>{{ .Title }}</h1>
+      {{ .Content }}
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <a href="/" class="footer-logo">
+      <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
+      <img src="/images/logo-color-transparent.png" alt="AgentEvals" class="logo-light">
+    </a>
+    <div class="footer-links">
+      <a href="{{ .Site.Params.github }}" target="_blank">GitHub</a>
+      <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
+    </div>
+    <span class="footer-copy">&copy; {{ now.Year }} AgentEvals. Open source under Apache 2.0.</span>
+  </div>
+</footer>
+
+{{ end }}

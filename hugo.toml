@@ -1,0 +1,8 @@
+baseURL = 'https://agentevals.dev/'
+languageCode = 'en-us'
+title = 'AgentEvals - Score Agent Behavior from OpenTelemetry Traces'
+
+[params]
+  description = "Score agent behavior from OpenTelemetry traces without re-running the agent."
+  github = "https://github.com/agentevals-dev/agentevals"
+  discord = "https://discord.gg/cpveEn8Ah2"
