@@ -1,5 +1,5 @@
 ---
-title: "🔄 CI/CD Integration"
+title: "CI/CD Integration"
 weight: 4
 description: "Run agent evaluations in your CI/CD pipeline."
 ---

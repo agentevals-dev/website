@@ -1,5 +1,5 @@
 ---
-title: "⚙️ Configuration"
+title: "Configuration"
 weight: 2
 description: "Configure evaluators, trace sources, and output formats."
 ---

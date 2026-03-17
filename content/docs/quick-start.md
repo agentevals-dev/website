@@ -1,5 +1,5 @@
 ---
-title: "🚀 Quick Start"
+title: "Quick Start"
 weight: 1
 description: "Get up and running with AgentEvals in under 5 minutes."
 ---

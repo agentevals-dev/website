@@ -1,5 +1,5 @@
 ---
-title: "🖥️ Web UI"
+title: "Web UI"
 weight: 6
 description: "Visually inspect traces and evaluate agent behavior interactively."
 ---

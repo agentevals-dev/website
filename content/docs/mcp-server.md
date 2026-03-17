@@ -1,5 +1,5 @@
 ---
-title: "🧩 MCP Server"
+title: "MCP Server"
 weight: 5
 description: "Run evaluations from Claude Code via the MCP server."
 ---

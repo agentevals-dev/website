@@ -1,5 +1,5 @@
 ---
-title: "💡 Examples"
+title: "Examples"
 weight: 3
 description: "Common evaluation patterns and real-world usage examples."
 ---
