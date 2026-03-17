@@ -2,19 +2,19 @@
 
 <!-- Navigation -->
 <nav class="nav">
-  <a href="/" class="nav-logo">
-    <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
-    <img src="/images/logo-color-transparent.png" alt="AgentEvals" class="logo-light">
+  <a href="{{ "/" | relURL }}" class="nav-logo">
+    <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
+    <img src="{{ "images/logo-color-transparent.png" | relURL }}" alt="AgentEvals" class="logo-light">
   </a>
   <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">&#9776;</button>
   <div class="nav-links">
-    <a href="/">Home</a>
-    <a href="/docs/">Docs</a>
+    <a href="{{ "/" | relURL }}">Home</a>
+    <a href="{{ "docs/" | relURL }}">Docs</a>
     <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
     <a href="{{ .Site.Params.github }}" target="_blank" class="btn-sm">GitHub</a>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-      <span class="icon-sun">&#9728;</span>
-      <span class="icon-moon">&#9790;</span>
+      <span class="icon-sun">☀️</span>
+      <span class="icon-moon">🌙</span>
     </button>
   </div>
 </nav>
@@ -48,9 +48,9 @@
 
 <footer class="footer">
   <div class="footer-content">
-    <a href="/" class="footer-logo">
-      <img src="/images/logo-color.png" alt="AgentEvals" class="logo-dark">
-      <img src="/images/logo-color-transparent.png" alt="AgentEvals" class="logo-light">
+    <a href="{{ "/" | relURL }}" class="footer-logo">
+      <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
+      <img src="{{ "images/logo-color-transparent.png" | relURL }}" alt="AgentEvals" class="logo-light">
     </a>
     <div class="footer-links">
       <a href="{{ .Site.Params.github }}" target="_blank">GitHub</a>
