@@ -562,6 +562,61 @@ section {
   color: var(--text-muted);
 }
 
+/* Evaluators CTA (homepage) */
+.evaluators-cta {
+  padding: 6rem 0;
+}
+
+.evaluators-cta-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin: 0 auto;
+  max-width: 960px;
+}
+
+.evaluators-cta-inner:hover {
+  border-color: rgba(128, 35, 195, 0.2);
+}
+
+.evaluators-cta-text h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.evaluators-cta-text p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.evaluators-cta-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .evaluators-cta-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .evaluators-cta-text p {
+    max-width: 100%;
+  }
+  .evaluators-cta-actions {
+    justify-content: center;
+  }
+}
+
 /* Interfaces Section */
 .interfaces {
   background: var(--bg-secondary);
@@ -714,6 +769,8 @@ section {
   display: flex;
   min-height: 100vh;
   padding-top: 65px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .docs-sidebar {
@@ -774,7 +831,7 @@ section {
 }
 
 .docs-content {
-  max-width: 800px;
+  max-width: 960px;
   padding: 3rem 4rem;
 }
 
