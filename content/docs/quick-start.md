@@ -1,66 +1,77 @@
 ---
 title: "Quick Start"
 weight: 1
-description: "Get up and running with AgentEvals in under 5 minutes."
+description: "Get started with agentevals in minutes"
 ---
 
-## Installation
+# Quick Start
 
-Grab a wheel from the [releases page](https://github.com/agentevals-dev/agentevals/releases). The **core** wheel has the CLI and REST API. The **bundle** wheel adds streaming and the embedded web UI.
+Get from zero to your first evaluation in under 5 minutes.
 
-```bash
-pip install agentevals-<version>-py3-none-any.whl
-
-# For MCP server and live streaming support:
-pip install "agentevals-<version>-py3-none-any.whl[live]"
-```
-
-**From source** with `uv` or Nix:
+## 1. Install
 
 ```bash
-uv sync
-# or: nix develop .
+npm install -g @agentevals/agentv
 ```
 
-See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build instructions.
-
-## CLI Quick Start
-
-Run an evaluation against a sample trace:
+Verify the installation:
 
 ```bash
-uv run agentevals run samples/helm.json \
-  --eval-set samples/eval_set_helm.json \
-  -m tool_trajectory_avg_score
+agentv --version
 ```
 
-List available evaluators:
+## 2. Create an Eval
+
+Create a file named `EVAL.yaml`:
+
+```yaml
+suite: customer-support-evals
+version: 1
+
+cases:
+  - name: tool_usage_validation
+    target: support-bot
+    criteria: Agent should use search_docs before answering policy questions
+    evaluators:
+      - type: tool_trajectory
+        expected_sequence: [search_docs, format_answer]
+        allow_extra_steps: true
+```
+
+## 3. Run Your Eval
+
+Execute your evaluation suite:
 
 ```bash
-uv run agentevals evaluator list
+agentv run --eval EVAL.yaml
 ```
 
-## Live UI Quick Start
+## 4. View Results
 
-Start the server with the embedded web UI:
+Get detailed results in the terminal:
 
 ```bash
-agentevals serve
+agentv run --eval EVAL.yaml --format table
 ```
 
-Open `http://localhost:8001` to upload traces and eval sets, select metrics, and view results with interactive span trees.
-
-**From source** (two terminals):
+Export as JSON for CI/CD or further processing:
 
 ```bash
-uv run agentevals serve --dev     # Terminal 1
-cd ui && npm install && npm run dev  # Terminal 2 → http://localhost:5173
+agentv run --eval EVAL.yaml --format json > results.json
 ```
 
-Live-streamed traces appear in the "Local Dev" tab, grouped by session ID.
+## 5. Try the Examples
 
-## What's Next
+Explore sample evaluation suites:
 
-- [Integrations](/docs/integrations/) — Zero-code, SDK, CLI/CI, and MCP integration patterns
-- [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators
-- [UI Walkthrough](/docs/ui-walkthrough/) — Deep dive into the web UI
+```bash
+npx agentv run --eval examples/customer-support/EVAL.yaml
+npx agentv run --eval examples/code-review/EVAL.yaml
+```
+
+## Next Steps
+
+- **Learn the YAML format** → [Configuration](/docs/configuration/)
+- **See more examples** → [Examples](/docs/examples/)
+- **Set up CI/CD** → [CI/CD Integration](/docs/ci-cd/)
+- **Use the MCP server** → [MCP Server](/docs/mcp-server/)
