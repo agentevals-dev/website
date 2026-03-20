@@ -350,6 +350,11 @@ section {
   margin: 0 auto;
 }
 
+/* Features section needs extra bottom breathing room before How It Works */
+#features {
+  padding-bottom: 8rem;
+}
+
 /* Features Grid */
 .features-grid {
   display: grid;
