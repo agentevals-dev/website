@@ -24,26 +24,23 @@ pip install agentevals
 npm install agentevals
 ```
 
-## Your First Evaluation
+## CLI Quick Start
+
+The fastest way to use AgentEvals is from the command line.
 
 ### 1. Export a trace
 
-If your agent is instrumented with OpenTelemetry, export a trace as a JSON file:
+If your agent is instrumented with OpenTelemetry, capture a trace:
 
 ```bash
 agentevals capture --otlp-port 4318 --output ./traces/my-agent.json
 ```
 
-Or if you already have a Jaeger JSON export:
-
-```bash
-# Use it directly — no conversion needed
-ls ./traces/jaeger-export.json
-```
+Or use an existing Jaeger JSON export directly — no conversion needed.
 
 ### 2. Create a golden eval set
 
-Create a YAML file that describes the expected behavior:
+Create a YAML file that describes expected agent behavior:
 
 ```yaml
 # evals/my-eval-set.yaml
@@ -93,16 +90,33 @@ Results:
 Overall: 2/2 passed (score: 0.96)
 ```
 
-### 4. Start the Web UI (optional)
+## Live UI Quick Start
+
+Start the web UI to visually inspect traces and evaluate agent behavior:
 
 ```bash
 agentevals ui
 ```
 
-Open `http://localhost:8080` to visually inspect traces and evaluation results.
+Open `http://localhost:8080` to:
+
+- **Upload a trace** — Load a Jaeger JSON or OTLP JSON file
+- **Browse the trajectory** — See every tool call, message, and timing in a waterfall view
+- **Run evaluations** — Select an eval set and see pass/fail results with detailed reasoning
+- **Build eval sets** — Turn recorded traces into golden eval sets interactively
+
+### Live Streaming
+
+Connect the UI to a running agent to watch traces in real-time:
+
+```bash
+agentevals ui --otlp-port 4318
+```
+
+Point your agent's OTLP exporter to `http://localhost:4318` and traces appear as they arrive.
 
 ## Next Steps
 
-- Read the [Configuration](/docs/configuration/) guide to customize evaluators
-- See [Examples](/docs/examples/) for common evaluation patterns
-- Set up [CI/CD Integration](/docs/ci-cd/) for automated evaluation
+- [Integrations](/docs/integrations/) — Zero-code, SDK, CLI/CI, and MCP integration patterns
+- [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators
+- [UI Walkthrough](/docs/ui-walkthrough/) — Deep dive into the web UI

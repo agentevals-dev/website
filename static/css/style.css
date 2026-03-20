@@ -406,7 +406,6 @@ section {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  margin-top: 4rem;
 }
 
 .steps {
@@ -416,15 +415,31 @@ section {
   position: relative;
 }
 
+/* Connecting lines between steps */
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: calc(16.67% + 24px);
+  right: calc(16.67% + 24px);
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
 @media (max-width: 768px) {
   .steps {
     grid-template-columns: 1fr;
+  }
+  .steps::before {
+    display: none;
   }
 }
 
 .step {
   text-align: center;
   position: relative;
+  z-index: 1;
 }
 
 .step-number {
@@ -439,6 +454,8 @@ section {
   font-weight: 700;
   font-size: 1.2rem;
   margin: 0 auto 1.25rem;
+  position: relative;
+  z-index: 2;
 }
 
 .step h3 {
@@ -450,6 +467,8 @@ section {
 .step p {
   color: var(--text-secondary);
   font-size: 0.9rem;
+  max-width: 280px;
+  margin: 0 auto;
 }
 
 /* Code Block */
