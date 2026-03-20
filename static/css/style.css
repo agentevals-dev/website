@@ -352,7 +352,7 @@ section {
 
 /* Features section needs extra bottom breathing room before How It Works */
 #features {
-  padding-bottom: 8rem;
+  padding-bottom: 10rem;
 }
 
 /* Features Grid */
@@ -411,6 +411,7 @@ section {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  margin-top: 2rem;
 }
 
 .steps {
