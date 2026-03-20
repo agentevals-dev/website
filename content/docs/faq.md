@@ -4,42 +4,44 @@ weight: 6
 description: "Frequently asked questions about AgentEvals."
 ---
 
+## How does this compare to ADK's evaluations?
+
+Unlike ADK's LocalEvalService, which couples agent execution with evaluation, agentevals only handles scoring: it takes pre-recorded traces and compares them against expected behavior using metrics like tool trajectory matching, response quality, and LLM-based judgments.
+
+However, if you're iterating on your agents locally, you can point your agents to agentevals and you will see rich runtime information in your browser. For more details, use the bundled wheel and explore the Local Development option in the UI.
+
+## How does this compare to Bedrock AgentCore's evaluation?
+
+AgentCore's evaluation integration (via `strands-agents-evals`) also couples agent execution with evaluation. It re-invokes the agent for each test case, converts the resulting OTel spans to AWS's ADOT format, and scores them against 4 built-in evaluators (Helpfulness, Accuracy, Harmfulness, Relevance) via a cloud API call. This means you need an AWS account, valid credentials, and network access for every evaluation.
+
+agentevals takes a different approach: it scores pre-recorded traces locally without re-running anything. It works with standard Jaeger JSON and OTLP formats from any framework, supports open-ended metrics (tool trajectory matching, LLM-based judges, custom scorers), and ships with a CLI, web UI, and MCP server. No cloud dependency required.
+
 ## What trace formats are supported?
 
-AgentEvals supports OTLP (OpenTelemetry Protocol) streams and Jaeger JSON trace exports. You can pipe traces from any OpenTelemetry-compatible observability platform, or export Jaeger JSON files directly.
+AgentEvals supports **OTLP** (OpenTelemetry Protocol) with `http/protobuf` and `http/json`, plus **Jaeger JSON** trace exports. Works with any OTel-instrumented framework including LangChain, Strands, Google ADK, and others.
 
 ## Do I need to re-run my agent to evaluate it?
 
-No. AgentEvals evaluates from existing traces, so you never need to replay expensive LLM calls. Collect traces once, evaluate many times with different eval sets.
+No. Record once, score as many times as you want. AgentEvals evaluates from existing traces, so you never need to replay expensive LLM calls.
 
-## What languages are supported?
+## What frameworks are supported?
 
-AgentEvals has first-class support for both Python and TypeScript/JavaScript. The SDK APIs are identical across both languages, and async is fully supported in both.
+Any framework that emits OpenTelemetry spans works out of the box. This includes **LangChain**, **Strands**, **Google ADK**, and any other OTel-instrumented framework. The zero-code integration requires no SDK — just point your agent's OTel exporter to agentevals.
 
-## What is the difference between trajectory match and LLM-as-judge?
+## Can I write custom evaluators?
 
-**Trajectory match** is deterministic — it compares tool calls and arguments using exact rules (strict, unordered, subset, superset). It's fast, reproducible, and free.
+Yes. Evaluators can be written in Python, JavaScript, or any language that reads JSON from stdin and writes JSON to stdout. See the [Custom Evaluators](/docs/custom-evaluators/) page for details.
 
-**LLM-as-judge** uses a language model to semantically evaluate trajectory quality. It can assess nuanced behavior (e.g., "did the agent ask for confirmation before booking?") but requires an LLM API call and incurs cost.
-
-Use trajectory match for structural checks, and LLM-as-judge for behavioral/semantic checks. They work great together.
-
-## Can I use AgentEvals with LangGraph?
-
-Yes. AgentEvals includes specialized graph trajectory evaluators and utilities for extracting trajectories directly from LangGraph threads and state snapshots. See the [Custom Evaluators](/docs/custom-evaluators/) page for details.
+A Python SDK is available (`pip install agentevals-evaluator-sdk`) for convenience, but it's not required.
 
 ## Can I use this in CI/CD?
 
-Absolutely. The CLI is designed for CI integration. Use `--output json` or `--output junit` for machine-readable results and `--min-score` with `--fail-on-below` to fail the pipeline when evaluations don't pass. See the [Integrations](/docs/integrations/) page for a GitHub Actions example.
+Absolutely. The CLI is designed for CI integration. Use `--output json` for machine-readable results. See the [CLI & CI/CD section](/docs/integrations/#cli--cicd) for a GitHub Actions example.
 
-## What LLM providers are supported for LLM-as-judge?
+## Is there a community evaluator registry?
 
-AgentEvals supports OpenAI and Anthropic models out of the box via their respective API keys. You can also pass a custom LangChain `BaseChatModel` instance for any other provider.
+Yes. Browse community-contributed evaluators on the [Evaluators](/evaluators/) page, or contribute your own to the [evaluators repository](https://github.com/agentevals-dev/evaluators).
 
 ## Is AgentEvals open source?
 
 Yes. AgentEvals is open source and available on [GitHub](https://github.com/agentevals-dev/agentevals). Contributions are welcome!
-
-## How is this different from other evaluation frameworks?
-
-Most evaluation frameworks assess only the final output. AgentEvals focuses on evaluating the *trajectory* — the intermediate steps an agent takes while solving problems. This makes it easier to understand how changes affect system behavior, catch regressions in tool usage patterns, and ensure agents follow expected workflows.

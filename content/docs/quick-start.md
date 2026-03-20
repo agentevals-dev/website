@@ -4,118 +4,62 @@ weight: 1
 description: "Get up and running with AgentEvals in under 5 minutes."
 ---
 
-## Prerequisites
-
-- Python 3.10+ or Node.js 18+
-- An OpenTelemetry-instrumented agent (or Jaeger JSON trace exports)
-- An API key for your LLM provider (if using LLM-as-Judge evaluations)
-
 ## Installation
 
-### Python
+Grab a wheel from the [releases page](https://github.com/agentevals-dev/agentevals/releases). The **core** wheel has the CLI and REST API. The **bundle** wheel adds streaming and the embedded web UI.
 
 ```bash
-pip install agentevals
+pip install agentevals-<version>-py3-none-any.whl
+
+# For MCP server and live streaming support:
+pip install "agentevals-<version>-py3-none-any.whl[live]"
 ```
 
-### Node.js
+**From source** with `uv` or Nix:
 
 ```bash
-npm install agentevals
+uv sync
+# or: nix develop .
 ```
+
+See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build instructions.
 
 ## CLI Quick Start
 
-The fastest way to use AgentEvals is from the command line.
-
-### 1. Export a trace
-
-If your agent is instrumented with OpenTelemetry, capture a trace:
+Run an evaluation against a sample trace:
 
 ```bash
-agentevals capture --otlp-port 4318 --output ./traces/my-agent.json
+uv run agentevals run samples/helm.json \
+  --eval-set samples/eval_set_helm.json \
+  -m tool_trajectory_avg_score
 ```
 
-Or use an existing Jaeger JSON export directly — no conversion needed.
-
-### 2. Create a golden eval set
-
-Create a YAML file that describes expected agent behavior:
-
-```yaml
-# evals/my-eval-set.yaml
-name: customer-support-agent
-description: Evaluate customer support agent behavior
-
-evaluations:
-  - name: greeting-check
-    description: Agent should greet the user
-    criteria:
-      - type: trajectory_match
-        mode: subset
-        expected_tools:
-          - name: lookup_customer
-            args_match: subset
-
-  - name: resolution-check
-    description: Agent should resolve the ticket
-    criteria:
-      - type: llm_judge
-        prompt: |
-          Did the agent successfully resolve the customer's issue?
-          Consider whether the agent identified the problem, took
-          appropriate actions, and confirmed resolution.
-```
-
-### 3. Run the evaluation
+List available evaluators:
 
 ```bash
-agentevals eval \
-  --trace ./traces/my-agent.json \
-  --eval-set ./evals/my-eval-set.yaml
-```
-
-Output:
-
-```
-AgentEvals v0.1.0
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Eval Set: customer-support-agent
-Trace:    ./traces/my-agent.json (12 spans)
-
-Results:
-  ✓ greeting-check         PASS  (1.0)
-  ✓ resolution-check       PASS  (0.92)
-
-Overall: 2/2 passed (score: 0.96)
+uv run agentevals evaluator list
 ```
 
 ## Live UI Quick Start
 
-Start the web UI to visually inspect traces and evaluate agent behavior:
+Start the server with the embedded web UI:
 
 ```bash
-agentevals ui
+agentevals serve
 ```
 
-Open `http://localhost:8080` to:
+Open `http://localhost:8001` to upload traces and eval sets, select metrics, and view results with interactive span trees.
 
-- **Upload a trace** — Load a Jaeger JSON or OTLP JSON file
-- **Browse the trajectory** — See every tool call, message, and timing in a waterfall view
-- **Run evaluations** — Select an eval set and see pass/fail results with detailed reasoning
-- **Build eval sets** — Turn recorded traces into golden eval sets interactively
-
-### Live Streaming
-
-Connect the UI to a running agent to watch traces in real-time:
+**From source** (two terminals):
 
 ```bash
-agentevals ui --otlp-port 4318
+uv run agentevals serve --dev     # Terminal 1
+cd ui && npm install && npm run dev  # Terminal 2 → http://localhost:5173
 ```
 
-Point your agent's OTLP exporter to `http://localhost:4318` and traces appear as they arrive.
+Live-streamed traces appear in the "Local Dev" tab, grouped by session ID.
 
-## Next Steps
+## What's Next
 
 - [Integrations](/docs/integrations/) — Zero-code, SDK, CLI/CI, and MCP integration patterns
 - [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators

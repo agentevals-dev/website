@@ -154,21 +154,19 @@
         <span class="code-label">terminal</span>
       </div>
       <div class="code-body">
-<pre><span class="comment"># Install agentevals</span>
-<span class="cmd">pip</span> install agentevals
+<pre><span class="comment"># Install from release wheel</span>
+<span class="cmd">pip</span> install agentevals-&lt;version&gt;-py3-none-any.whl
 
-<span class="comment"># Or with npm</span>
-<span class="cmd">npm</span> install agentevals
-
-<span class="comment"># Run an evaluation against a trace file</span>
-<span class="cmd">agentevals</span> eval <span class="flag">--trace</span> <span class="string">./traces/agent-run.json</span> \
-  <span class="flag">--eval-set</span> <span class="string">./evals/golden.yaml</span>
+<span class="comment"># Run an evaluation against a trace</span>
+<span class="cmd">agentevals</span> run samples/helm.json \
+  <span class="flag">--eval-set</span> <span class="string">samples/eval_set_helm.json</span> \
+  <span class="flag">-m</span> <span class="string">tool_trajectory_avg_score</span>
 
 <span class="comment"># Start the web UI</span>
-<span class="cmd">agentevals</span> ui
+<span class="cmd">agentevals</span> serve
 
-<span class="comment"># Start the MCP server for Claude Code</span>
-<span class="cmd">agentevals</span> mcp-server</pre>
+<span class="comment"># Start the MCP server</span>
+<span class="cmd">agentevals</span> mcp</pre>
       </div>
     </div>
   </div>

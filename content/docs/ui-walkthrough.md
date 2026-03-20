@@ -4,88 +4,65 @@ weight: 4
 description: "Visual guide to the AgentEvals web interface."
 ---
 
-The AgentEvals Web UI provides a visual interface for inspecting traces, running evaluations, and building eval sets.
+The AgentEvals Web UI provides a visual interface for uploading traces, running evaluations, and inspecting results with interactive span trees.
 
 ## Starting the UI
 
-```bash
-# Start on default port
-agentevals ui
-
-# Start on a custom port
-agentevals ui --port 3000
-
-# Start with live OTLP receiver
-agentevals ui --otlp-port 4318
-```
-
-## Home Screen
-
-The home screen gives you three workflows:
-
-- **Live Streaming** — Watch traces and evaluations in real-time as you develop
-- **Offline Evaluations** — Upload traces and eval sets to run batch evaluations
-- **EvalSet Builder** — Turn recorded traces into golden eval sets
-
-## Trace Inspector
-
-The trace inspector provides a detailed view of each trace:
-
-- **Waterfall view** — Visualize span timing and hierarchy
-- **Span details** — View attributes, events, status, and duration
-- **Tool calls** — See every tool invocation with arguments and results
-- **LLM calls** — Inspect prompts, completions, token usage, and latency
-- **Evaluation overlay** — See which spans matched evaluation criteria
-
-## Live Streaming Mode
-
-Connect the UI to a running agent to see traces in real-time:
+**Installed bundle** (port 8001):
 
 ```bash
-agentevals ui --otlp-port 4318
+agentevals serve
 ```
 
-Point your agent's OTLP exporter to `http://localhost:4318`. Traces appear in the UI as they arrive.
+**From source** (two terminals):
 
-**Features:**
-- Real-time trace visualization with span waterfall
-- Automatic evaluation as traces complete
-- Live pass/fail indicators
-- Span detail inspector with attributes, events, and links
+```bash
+uv run agentevals serve --dev      # Terminal 1
+cd ui && npm install && npm run dev   # Terminal 2 → http://localhost:5173
+```
 
-## Running Offline Evaluations
+## Key Features
 
-1. Click **Offline Evaluations** on the home screen
-2. Upload or select a trace file (OTLP JSON or Jaeger JSON)
-3. Select an eval set
-4. Click **Run Evaluation**
-5. View detailed results with per-criterion scores
+### Trace Upload & Evaluation
 
-## EvalSet Builder
+Upload traces and eval sets, select metrics, and view results. Supports both **Jaeger JSON** and **OTLP** trace formats.
 
-Create golden eval sets from recorded traces:
+### Interactive Span Trees
 
-1. Click **EvalSet Builder** on the home screen
-2. Select a trace to base the eval set on
-3. The builder analyzes the trace and suggests evaluation criteria
-4. Review and customize each criterion:
-   - Adjust trajectory match modes
-   - Edit LLM judge prompts
-   - Set scoring thresholds
-5. Export as YAML for use with the CLI or CI/CD
+Drill into agent execution with interactive span trees showing:
+- Span timing and hierarchy
+- Tool calls with arguments and results
+- LLM calls with prompts, completions, and token usage
+- Evaluation overlay showing which spans matched criteria
 
-## Diff View
+### Live Streaming
 
-Compare two agent runs side-by-side to understand behavioral changes:
+Live-streamed traces appear in the **Local Dev** tab, grouped by session ID. Connect any OTel-instrumented agent:
 
-- See which tool calls changed between runs
-- Compare evaluation scores across versions
-- Identify regressions quickly
+```bash
+# Start the server with dev mode
+uv run agentevals serve --dev
 
-## Exporting Results
+# Point your agent's OTel exporter to agentevals
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_RESOURCE_ATTRIBUTES="agentevals.session_name=my-agent"
+python your_agent.py
+```
 
-Export evaluation results from the UI:
+Traces stream in real-time. Works with LangChain, Strands, Google ADK, or any OTel-compatible framework.
 
-- **JSON** — Full results with scores, reasoning, and metadata
-- **CSV** — Tabular format for spreadsheets and reporting
-- **YAML** — Eval set format for reuse with the CLI
+### Session Management
+
+Sessions are auto-created and grouped by `agentevals.session_name`. Set `agentevals.eval_set_id` to associate traces with an eval set for automatic evaluation.
+
+## REST API
+
+While the server is running, interactive API documentation is available:
+
+| Endpoint | Description |
+|----------|-------------|
+| [`/docs`](http://localhost:8001/docs) | Swagger UI with interactive request builder |
+| [`/redoc`](http://localhost:8001/redoc) | ReDoc reference documentation |
+| [`/openapi.json`](http://localhost:8001/openapi.json) | Raw OpenAPI 3.x schema (for code generation or CI) |
+
+The OTLP receiver (port 4318) serves its own docs at `http://localhost:4318/docs`.

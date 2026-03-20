@@ -4,156 +4,78 @@ weight: 2
 description: "Zero-code, SDK, CLI/CI, and MCP integration patterns."
 ---
 
-AgentEvals can be used in multiple ways depending on your workflow. Evaluate agents with zero code using YAML-based eval sets, programmatically via the SDK, in CI pipelines, or conversationally through the MCP server.
+AgentEvals can be used in multiple ways depending on your workflow. Evaluate agents with zero code via OTel, programmatically via the SDK, in CI pipelines with the CLI, or conversationally through the MCP server.
 
-> For detailed, working examples covering all integration patterns, see the [examples directory](https://github.com/agentevals-dev/agentevals/tree/main/examples) in the repository. The examples are comprehensive and production-quality.
+> For detailed, working examples covering all integration patterns, see the [examples directory](https://github.com/agentevals-dev/agentevals/tree/main/examples) in the repository.
 
 ---
 
-## Zero-Code Evaluation
+## Zero-Code (Recommended)
 
-Define evaluations entirely in YAML — no code required. Create an eval set file that describes the expected agent behavior, then run it against traces using the CLI.
-
-```yaml
-# evals/golden.yaml
-name: booking-agent-evals
-description: Golden eval set for the booking agent
-
-evaluators:
-  - name: calls-search-tool
-    type: trajectory_match
-    match_mode: superset
-    expected_tools:
-      - search_flights
-      - search_hotels
-
-  - name: confirms-before-booking
-    type: llm_as_judge
-    prompt: |
-      Does the agent ask the user for confirmation
-      before making a booking?
-
-  - name: no-hallucinated-prices
-    type: llm_as_judge
-    prompt: |
-      Does the agent only quote prices that were
-      returned by tool calls?
-```
-
-Run it:
+Point any OTel-instrumented agent at the receiver. No SDK, no code changes:
 
 ```bash
-agentevals eval --trace ./traces/booking-run.json \
-  --eval-set ./evals/golden.yaml
+# Terminal 1 — start the agentevals server
+uv run agentevals serve --dev
+
+# Terminal 2 — run your agent with OTel pointing to agentevals
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_RESOURCE_ATTRIBUTES="agentevals.session_name=my-agent"
+python your_agent.py
 ```
 
-That's it. No Python, no TypeScript — just YAML and a trace file.
+Traces stream to the UI in real-time. Works with **LangChain**, **Strands**, **Google ADK**, or any framework that emits OTel spans (`http/protobuf` and `http/json` supported).
+
+Sessions are auto-created and grouped by `agentevals.session_name`. Set `agentevals.eval_set_id` to associate traces with an eval set.
+
+See [examples/zero-code-examples/](https://github.com/agentevals-dev/agentevals/tree/main/examples/zero-code-examples) for working examples with different frameworks.
 
 ---
 
 ## AgentEvals SDK
 
-For programmatic control, use the SDK directly. This gives you full flexibility to compose evaluators, define custom scoring logic, and integrate into your test suite.
-
-### Python
+For programmatic session lifecycle and decorator API:
 
 ```python
-from agentevals.trajectory.match import (
-    create_trajectory_match_evaluator
-)
-from agentevals.trajectory.llm import (
-    create_trajectory_llm_as_judge
-)
+from agentevals import AgentEvals
 
-# Trajectory matching with flexible modes
-match_eval = create_trajectory_match_evaluator(
-    trajectory_match_mode="superset",
-    tool_args_match_mode="ignore"
-)
+app = AgentEvals()
 
-result = match_eval(
-    outputs=actual_trajectory,
-    reference_outputs=expected_trajectory
-)
-print(f"Match: {result.score}")
-
-# LLM-as-judge for semantic evaluation
-llm_eval = create_trajectory_llm_as_judge(
-    model="openai:o3-mini",
-    use_reasoning=True,
-    continuous=True  # 0.0-1.0 score
-)
-
-result = llm_eval(
-    outputs=trajectory,
-    reference_outputs=reference
-)
-print(f"Score: {result.score}")
-print(f"Reasoning: {result.comment}")
+with app.session(eval_set_id="my-eval"):
+    agent.invoke("Roll a 20-sided die for me")
 ```
 
-### TypeScript
-
-```typescript
-import {
-  createTrajectoryMatchEvaluator,
-  createTrajectoryLLMAsJudge
-} from "agentevals";
-
-// Trajectory matching with flexible modes
-const matchEval = createTrajectoryMatchEvaluator({
-  trajectoryMatchMode: "superset",
-  toolArgsMatchMode: "ignore"
-});
-
-const matchResult = await matchEval({
-  outputs: actualTrajectory,
-  referenceOutputs: expectedTrajectory
-});
-console.log(`Match: ${matchResult.score}`);
-
-// LLM-as-judge for semantic evaluation
-const llmEval = createTrajectoryLLMAsJudge({
-  model: "openai:o3-mini",
-  useReasoning: true,
-  continuous: true
-});
-
-const llmResult = await llmEval({
-  outputs: trajectory,
-  referenceOutputs: reference
-});
-console.log(`Score: ${llmResult.score}`);
-```
-
-For more SDK examples including graph trajectory evaluation, async usage, custom prompts, and few-shot examples, see the [examples directory](https://github.com/agentevals-dev/agentevals/tree/main/examples).
+Requires `pip install "agentevals[streaming]"`. See [examples/sdk_example/](https://github.com/agentevals-dev/agentevals/tree/main/examples/sdk_example) for framework-specific patterns.
 
 ---
 
 ## CLI & CI/CD
 
-AgentEvals is designed to run in CI pipelines. Gate deployments on agent behavior quality scores.
+The CLI is built for scripting and CI pipelines.
 
-### CLI Commands
+### Commands
 
 ```bash
-# Evaluate a trace against an eval set
-agentevals eval --trace ./traces/run.json \
-  --eval-set ./evals/golden.yaml
+# Single trace
+uv run agentevals run samples/helm.json \
+  --eval-set samples/eval_set_helm.json \
+  -m tool_trajectory_avg_score
 
-# Output as JSON for scripting
-agentevals eval --trace ./traces/run.json \
-  --eval-set ./evals/golden.yaml --output json
+# Multiple traces
+uv run agentevals run samples/helm.json samples/k8s.json \
+  --eval-set samples/eval_set_helm.json \
+  -m tool_trajectory_avg_score
 
-# Output as JUnit XML for CI test reporters
-agentevals eval --trace ./traces/run.json \
-  --eval-set ./evals/golden.yaml \
-  --output junit --output-file results.xml
+# JSON output for programmatic processing
+uv run agentevals run samples/helm.json \
+  --eval-set samples/eval_set_helm.json \
+  --output json
 
-# Set a minimum score threshold (exits 1 if below)
-agentevals eval --trace ./traces/run.json \
-  --eval-set ./evals/golden.yaml \
-  --min-score 0.85 --fail-on-below
+# List available evaluators (builtin + community)
+uv run agentevals evaluator list
+
+# List only builtin evaluators
+uv run agentevals evaluator list --source builtin
 ```
 
 ### GitHub Actions Example
@@ -179,91 +101,65 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: |
-          pip install agentevals
-          pip install -r requirements.txt
+      - name: Install agentevals
+        run: pip install agentevals-*.whl
 
       - name: Run agent and capture trace
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          python run_agent.py --capture-trace ./traces/pr-run.json
+        run: python run_agent.py --capture-trace ./traces/pr-run.json
 
       - name: Evaluate agent behavior
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          agentevals eval \
-            --trace ./traces/pr-run.json \
-            --eval-set ./evals/golden.yaml \
-            --output junit \
-            --output-file ./results/eval-results.xml
+          agentevals run ./traces/pr-run.json \
+            --eval-set ./evals/golden.json \
+            -m tool_trajectory_avg_score \
+            --output json > results.json
 
-      - name: Publish results
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Agent Evaluation Results
-          path: ./results/eval-results.xml
-          reporter: java-junit
+      - name: Check results
+        run: |
+          python -c "
+          import json, sys
+          results = json.load(open('results.json'))
+          if results['overall_score'] < 0.85:
+              print(f'Score {results[\"overall_score\"]} below threshold')
+              sys.exit(1)
+          "
 ```
-
-### Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| `0` | All evaluations passed |
-| `1` | One or more evaluations failed |
-| `2` | Configuration or runtime error |
 
 ---
 
 ## MCP Server
 
-Run evaluations directly from Claude Code (or any MCP-compatible client). The MCP server exposes AgentEvals as tools that AI agents can invoke.
+Exposes evaluation tools to MCP clients. A `.mcp.json` at the project root lets Claude Code pick it up automatically.
+
+### Available Tools
+
+| Tool | Requires `serve` | Description |
+|------|:---:|-------------|
+| `list_metrics` | yes | List available metrics |
+| `evaluate_traces` | no | Evaluate local trace files (OTLP or Jaeger) |
+| `list_sessions` | yes | List streaming sessions |
+| `summarize_session` | yes | Structured summary of a session's tool calls |
+| `evaluate_sessions` | yes | Evaluate sessions against a golden reference |
 
 ### Setup
 
 ```bash
 # Start the MCP server
-agentevals mcp-server
+uv run agentevals mcp
+
+# Custom server URL
+AGENTEVALS_SERVER_URL=http://localhost:9000 uv run agentevals mcp
 ```
 
-Add to your Claude Code configuration:
+The React UI and MCP server share the same in-memory session state and can run simultaneously.
 
-```json
-{
-  "mcpServers": {
-    "agentevals": {
-      "command": "agentevals",
-      "args": ["mcp-server"],
-      "env": {
-        "OPENAI_API_KEY": "your-key-here"
-      }
-    }
-  }
-}
-```
+### Claude Code Skills
 
-### Available MCP Tools
+Two slash-command workflows are available in repos with `.claude/skills/`:
 
-- **`evaluate_trace`** — Run an evaluation against a trace file
-- **`list_eval_sets`** — List all available eval sets in the project
-- **`create_eval_set`** — Interactively create a new eval set from a trace
-- **`compare_runs`** — Compare evaluation results across multiple traces
-
-### Example Conversation
-
-> **You:** Evaluate the trace in `./traces/latest.json` against `./evals/golden.yaml`
->
-> **Claude:** *uses evaluate_trace tool*
->
-> Results:
-> - greeting-check: PASS (1.0)
-> - resolution-check: PASS (0.92)
-> - Overall: 2/2 passed (score: 0.96)
-
-> **You:** Why did the resolution-check fail? Show me the relevant spans.
-
-This lets you iterate on evaluations conversationally without switching between tools.
+| Skill | What it does |
+|-------|-------------|
+| `/eval` | Score traces or compare sessions against a golden reference |
+| `/inspect` | Turn-by-turn narrative of a live session with anomaly detection |

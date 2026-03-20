@@ -1,162 +1,108 @@
 ---
 title: "Custom Evaluators"
 weight: 3
-description: "Build your own evaluators for domain-specific evaluation logic."
+description: "Write your own scoring logic in Python, JavaScript, or any language."
 ---
 
-Beyond the built-in evaluators, AgentEvals supports creating custom evaluators for domain-specific evaluation logic.
+Beyond the built-in metrics, you can write your own evaluators in Python, JavaScript, or any language. An evaluator is any program that reads JSON from stdin and writes a score to stdout.
 
-> For the comprehensive custom evaluators guide, see [custom-evaluators.md](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) in the repository.
+> For the comprehensive guide, see [custom-evaluators.md](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) in the repository.
 
-## Built-in Evaluator Types
+## Scaffold an Evaluator
 
-AgentEvals ships with three families of evaluators:
+```bash
+agentevals evaluator init my_evaluator
+```
 
-### Trajectory Match
+This creates a directory with boilerplate and a manifest:
 
-Deterministic comparison of agent trajectories against reference outputs. Fast, free, and reproducible.
+```
+my_evaluator/
+├── my_evaluator.py     # your scoring logic
+└── evaluator.yaml      # metadata manifest
+```
 
-**Matching modes:**
-- **strict** — Exact match: identical messages and tool calls in the same order
-- **unordered** — All required tools must be called, but order doesn't matter
-- **subset** — Agent calls only the reference tools (no extras allowed)
-- **superset** — Agent calls at least all reference tools (extras are OK)
+You can also list supported runtimes and generate config snippets:
 
-**Tool argument matching:**
-- **exact** — Tool arguments must match precisely (default)
-- **ignore** — Disregard argument differences entirely
-- **subset** / **superset** — Partial argument matching
-- **Custom matchers** — Per-tool matching logic via `tool_args_match_overrides`
+```bash
+agentevals evaluator runtimes              # show supported languages
+agentevals evaluator config my_evaluator \
+  --path ./evaluators/my_evaluator.py      # generate config snippet
+```
 
-### LLM-as-Judge
+## Implement Scoring Logic
 
-Uses a language model to evaluate trajectory quality semantically. Supports custom prompts, few-shot examples, continuous scoring (0.0–1.0), and both with-reference and without-reference evaluation.
-
-**Built-in prompt templates:**
-- `TRAJECTORY_ACCURACY_PROMPT` — Quality-only evaluation (no reference needed)
-- `TRAJECTORY_ACCURACY_PROMPT_WITH_REFERENCE` — Compares against a reference trajectory (default)
-- `GRAPH_TRAJECTORY_ACCURACY_PROMPT` — Specialized for graph-based evaluation
-
-### Graph Trajectory
-
-Specialized for LangGraph workflows. Includes LLM-as-judge and strict match variants, with utilities for extracting trajectories from graph state snapshots and threads.
-
-## Custom Per-Tool Argument Matching
-
-### Python
+Your function receives an `EvalInput` with the agent's invocations and returns an `EvalResult` with a score between 0.0 and 1.0.
 
 ```python
-from agentevals.trajectory.match import (
-    create_trajectory_match_evaluator
-)
+from agentevals_evaluator_sdk import EvalInput, EvalResult, evaluator
 
-evaluator = create_trajectory_match_evaluator(
-    trajectory_match_mode="superset",
-    tool_args_match_mode="exact",
-    tool_args_match_overrides={
-        # Ignore args for search (queries vary)
-        "search_flights": "ignore",
-        # Only check specific keys for booking
-        "book_flight": ["flight_id", "passenger_name"],
-        # Custom matcher function
-        "send_email": lambda actual, expected: (
-            actual["to"] == expected["to"]
-        ),
-    }
-)
+@evaluator
+def my_evaluator(input: EvalInput) -> EvalResult:
+    scores = []
+    for inv in input.invocations:
+        # Your scoring logic here
+        score = 1.0
+        scores.append(score)
+
+    return EvalResult(
+        score=sum(scores) / len(scores) if scores else 0.0,
+        per_invocation_scores=scores,
+    )
+
+if __name__ == "__main__":
+    my_evaluator.run()
 ```
 
-### TypeScript
+Install the SDK standalone with `pip install agentevals-evaluator-sdk` (no heavy dependencies).
 
-```typescript
-import { createTrajectoryMatchEvaluator } from "agentevals";
+## Reference in Eval Config
 
-const evaluator = createTrajectoryMatchEvaluator({
-  trajectoryMatchMode: "superset",
-  toolArgsMatchMode: "exact",
-  toolArgsMatchOverrides: {
-    // Ignore args for search (queries vary)
-    search_flights: "ignore",
-    // Only check specific keys for booking
-    book_flight: ["flight_id", "passenger_name"],
-    // Custom matcher function
-    send_email: (actual, expected) =>
-      actual.to === expected.to,
-  }
-});
+```yaml
+# eval_config.yaml
+evaluators:
+  - name: tool_trajectory_avg_score
+    type: builtin
+
+  - name: my_evaluator
+    type: code
+    path: ./evaluators/my_evaluator.py
+    threshold: 0.7
 ```
 
-## LLM-as-Judge with Custom Prompts
-
-### Python
-
-```python
-from agentevals.trajectory.llm import (
-    create_trajectory_llm_as_judge
-)
-
-evaluator = create_trajectory_llm_as_judge(
-    model="openai:o3-mini",
-    prompt="""Evaluate whether the agent followed the company's
-    escalation policy. The agent should:
-    1. Attempt to resolve the issue directly
-    2. If unable, ask the customer to hold
-    3. Transfer to a supervisor with context
-    Score 1.0 if all steps followed, 0.0 otherwise.""",
-    continuous=True,
-    use_reasoning=True
-)
+```bash
+agentevals run trace.json --config eval_config.yaml --eval-set eval_set.json
 ```
 
-### TypeScript
+## Community Evaluators
 
-```typescript
-import { createTrajectoryLLMAsJudge } from "agentevals";
+Community evaluators can be referenced directly from the shared [evaluators repository](https://github.com/agentevals-dev/evaluators) using `type: remote`:
 
-const evaluator = createTrajectoryLLMAsJudge({
-  model: "openai:o3-mini",
-  prompt: `Evaluate whether the agent followed the company's
-    escalation policy. The agent should:
-    1. Attempt to resolve the issue directly
-    2. If unable, ask the customer to hold
-    3. Transfer to a supervisor with context
-    Score 1.0 if all steps followed, 0.0 otherwise.`,
-  continuous: true,
-  useReasoning: true
-});
+```yaml
+evaluators:
+  - name: response_quality
+    type: remote
+    source: github
+    ref: evaluators/response_quality/response_quality.py
+    threshold: 0.7
+    config:
+      min_response_length: 20
 ```
 
-## Graph Trajectory Evaluation
+Browse available community evaluators on the [Evaluators](/evaluators/) page, or contribute your own.
 
-For LangGraph workflows, use the specialized graph trajectory evaluators:
+## Supported Languages
 
-### Python
+Evaluators can be written in any language that reads JSON from stdin and writes JSON to stdout.
 
-```python
-from agentevals.graph_trajectory import (
-    create_graph_trajectory_llm_as_judge,
-    graph_trajectory_strict_match,
-    extract_langgraph_trajectory_from_thread
-)
-
-# Extract trajectory from a LangGraph thread
-trajectory = extract_langgraph_trajectory_from_thread(
-    thread_id="my-thread",
-    graph=my_graph
-)
-
-# Evaluate with LLM judge
-evaluator = create_graph_trajectory_llm_as_judge()
-result = evaluator(outputs=trajectory.outputs)
-
-# Or use strict matching
-result = graph_trajectory_strict_match(
-    outputs=trajectory.outputs,
-    reference_outputs=expected
-)
-```
+| Language | Extension | SDK available |
+|---|---|---|
+| Python | `.py` | `pip install agentevals-evaluator-sdk` |
+| JavaScript | `.js` | No SDK yet — just read stdin, write stdout |
+| TypeScript | `.ts` | No SDK yet — just read stdin, write stdout |
 
 ## Further Reading
 
-- [Full Custom Evaluators Guide](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md)
-- [Examples Directory](https://github.com/agentevals-dev/agentevals/tree/main/examples)
+- [Custom Evaluators Guide](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) — Full protocol reference
+- [Community Evaluators](/evaluators/) — Browse and submit evaluators
+- [Eval Set Format](https://github.com/agentevals-dev/agentevals/blob/main/docs/eval-set-format.md) — Schema and field reference for eval set JSON files

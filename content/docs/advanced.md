@@ -1,123 +1,55 @@
 ---
 title: "Advanced"
 weight: 5
-description: "Advanced configuration, API reference, and deep-dive resources."
+description: "Deep-dive documentation, REST API, and development setup."
 ---
 
-## Configuration Reference
+## Docs
 
-### Eval Set Configuration
+| Guide | Description |
+|-------|-------------|
+| [Eval Set Format](https://github.com/agentevals-dev/agentevals/blob/main/docs/eval-set-format.md) | Schema, field reference, and examples for golden eval set JSON files |
+| [Custom Evaluators](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) | Write your own scoring logic in Python, JavaScript, or any language |
+| [Live Streaming](https://github.com/agentevals-dev/agentevals/blob/main/docs/streaming.md) | Real-time trace streaming, dev server setup, and session management |
+| [OpenTelemetry Compatibility](https://github.com/agentevals-dev/agentevals/blob/main/docs/otel-compatibility.md) | Supported OTel conventions, message delivery mechanisms, and OTLP receiver |
 
-```yaml
-# agentevals.yaml
-version: "1"
+## REST API Reference
 
-trace_sources:
-  - type: otlp
-    port: 4318
-    protocol: http
+While the server is running (`agentevals serve`), interactive API documentation is available at:
 
-  - type: jaeger
-    path: ./traces/*.json
+| Endpoint | Description |
+|----------|-------------|
+| [`/docs`](http://localhost:8001/docs) | Swagger UI with interactive request builder |
+| [`/redoc`](http://localhost:8001/redoc) | ReDoc reference documentation |
+| [`/openapi.json`](http://localhost:8001/openapi.json) | Raw OpenAPI 3.x schema (for code generation or CI) |
 
-llm:
-  provider: openai
-  model: gpt-4o
-  temperature: 0.0
+The OTLP receiver (port 4318) serves its own docs at `http://localhost:4318/docs`.
 
-output:
-  format: table    # table, json, junit
-  verbose: false
+## MCP Server Tools
+
+| Tool | Requires `serve` | Description |
+|------|:---:|-------------|
+| `list_metrics` | yes | List available metrics |
+| `evaluate_traces` | no | Evaluate local trace files (OTLP or Jaeger) |
+| `list_sessions` | yes | List streaming sessions |
+| `summarize_session` | yes | Structured summary of a session's tool calls |
+| `evaluate_sessions` | yes | Evaluate sessions against a golden reference |
+
+## Claude Code Skills
+
+Two slash-command workflows in `.claude/skills/`, available automatically in repos with the agentevals config:
+
+| Skill | What it does |
+|-------|-------------|
+| `/eval` | Score traces or compare sessions against a golden reference |
+| `/inspect` | Turn-by-turn narrative of a live session with anomaly detection |
+
+## Development
+
+```bash
+uv run pytest                      # run tests
+uv run agentevals serve --dev      # backend
+cd ui && npm run dev               # frontend (separate terminal)
 ```
 
-### Evaluator Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `trajectory_match_mode` | `"strict"` \| `"unordered"` \| `"subset"` \| `"superset"` | `"strict"` | How to compare trajectories |
-| `tool_args_match_mode` | `"exact"` \| `"ignore"` \| `"subset"` \| `"superset"` | `"exact"` | How to match tool arguments |
-| `tool_args_match_overrides` | `Dict[str, ...]` | `None` | Custom matchers per tool |
-| `model` | `str` | `None` | LLM model for judge evaluators |
-| `continuous` | `bool` | `False` | Float (0–1) vs boolean scoring |
-| `use_reasoning` | `bool` | `True` | Include reasoning in output |
-| `few_shot_examples` | `List[FewShotExample]` | `None` | Example evaluations for LLM judge |
-| `feedback_key` | `str` | `"trajectory_accuracy"` | Key name for evaluation results |
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `AGENTEVALS_CONFIG` | Path to config file | `./agentevals.yaml` |
-| `OPENAI_API_KEY` | OpenAI API key for LLM judge | — |
-| `ANTHROPIC_API_KEY` | Anthropic API key for LLM judge | — |
-| `AGENTEVALS_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
-| `AGENTEVALS_OUTPUT_FORMAT` | Output format override | `table` |
-
-## Deep-Dive Documentation
-
-For comprehensive coverage of specific topics, see the repository docs:
-
-- [Trajectory Match Evaluators](https://github.com/agentevals-dev/agentevals#trajectory-match-evaluators) — Full reference for all matching modes and configuration
-- [LLM-as-Judge Evaluators](https://github.com/agentevals-dev/agentevals#llm-as-judge-evaluators) — Custom prompts, few-shot examples, continuous scoring
-- [Graph Trajectory Evaluators](https://github.com/agentevals-dev/agentevals#graph-trajectory-evaluators) — LangGraph integration and trajectory extraction
-- [LangSmith Integration](https://github.com/agentevals-dev/agentevals#langsmith-integration) — Running evaluations with pytest, Vitest, and LangSmith experiments
-- [Custom Evaluators Guide](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) — Writing domain-specific evaluators
-
-## Async Support
-
-Both Python and TypeScript support fully async evaluators:
-
-### Python
-
-```python
-from agentevals.trajectory.match import (
-    create_async_trajectory_match_evaluator
-)
-from agentevals.trajectory.llm import (
-    create_async_trajectory_llm_as_judge
-)
-
-# Async trajectory match
-async_match = create_async_trajectory_match_evaluator(
-    trajectory_match_mode="strict"
-)
-result = await async_match(
-    outputs=trajectory,
-    reference_outputs=reference
-)
-
-# Async LLM-as-judge
-async_judge = create_async_trajectory_llm_as_judge(
-    model="openai:o3-mini"
-)
-result = await async_judge(
-    outputs=trajectory,
-    reference_outputs=reference
-)
-```
-
-## API Reference
-
-### Python Public API
-
-| Function | Description |
-|----------|-------------|
-| `create_trajectory_match_evaluator()` | Create a configurable trajectory match evaluator |
-| `create_async_trajectory_match_evaluator()` | Async variant |
-| `create_trajectory_llm_as_judge()` | Evaluate trajectory quality with an LLM judge |
-| `create_async_trajectory_llm_as_judge()` | Async variant |
-| `create_graph_trajectory_llm_as_judge()` | LLM-as-judge for LangGraph workflows |
-| `create_async_graph_trajectory_llm_as_judge()` | Async variant |
-| `graph_trajectory_strict_match()` | Strict match for graph execution steps |
-| `extract_langgraph_trajectory_from_thread()` | Extract trajectory from a LangGraph thread |
-| `extract_langgraph_trajectory_from_snapshots()` | Extract trajectory from state snapshots |
-
-### TypeScript Public API
-
-| Function | Description |
-|----------|-------------|
-| `createTrajectoryMatchEvaluator()` | Create a configurable trajectory match evaluator |
-| `createTrajectoryLLMAsJudge()` | Evaluate trajectory quality with an LLM judge |
-| `createGraphTrajectoryLLMAsJudge()` | LLM-as-judge for LangGraph workflows |
-| `extractLangGraphTrajectoryFromThread()` | Extract trajectory from a LangGraph thread |
-| `extractLangGraphTrajectoryFromSnapshots()` | Extract trajectory from state snapshots |
+See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build tiers, Makefile targets, and Nix setup. To contribute, see [CONTRIBUTING.md](https://github.com/agentevals-dev/agentevals/blob/main/CONTRIBUTING.md).
