@@ -1,0 +1,176 @@
+{{ define "main" }}
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="{{ "/" | relURL }}" class="nav-logo">
+    <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
+    <img src="{{ "images/logo-color-transparent.png" | relURL }}" alt="AgentEvals" class="logo-light">
+  </a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">&#9776;</button>
+  <div class="nav-links">
+    <a href="{{ "/" | relURL }}">Home</a>
+    <a href="{{ "docs/" | relURL }}">Docs</a>
+    <a href="{{ "evaluators/" | relURL }}" class="nav-active">Evaluators</a>
+    <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
+    <a href="{{ .Site.Params.github }}" target="_blank" class="btn-sm">GitHub</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="icon-sun">&#9728;</span>
+      <span class="icon-moon">&#9790;</span>
+    </button>
+  </div>
+</nav>
+
+<div class="eval-registry">
+  <div class="container">
+    <!-- Header -->
+    <div class="eval-header">
+      <h1>Community Evaluators</h1>
+      <p>Browse and use community-contributed evaluators, or submit your own.</p>
+      <div class="eval-header-actions">
+        <div class="eval-search-wrapper">
+          <input type="text" id="evalSearch" class="eval-search" placeholder="Search evaluators..." oninput="filterEvaluators()">
+        </div>
+        <a href="https://github.com/agentevals-dev/evaluators#contributing-an-evaluator" target="_blank" class="btn btn-primary">
+          + Submit an Evaluator
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="eval-stats">
+      <span class="eval-stat"><strong>{{ len .Site.Data.evaluators.evaluators }}</strong> evaluators</span>
+      <span class="eval-stat-sep">&#183;</span>
+      <span class="eval-stat">Last updated: {{ .Site.Data.evaluators.generatedAt | time.Format "Jan 2, 2006" }}</span>
+      <span class="eval-stat-sep">&#183;</span>
+      <a href="https://github.com/agentevals-dev/evaluators" target="_blank" class="eval-stat-link">View on GitHub &#8599;</a>
+    </div>
+
+    <!-- Evaluator Grid -->
+    <div class="eval-grid" id="evalGrid">
+      {{ range .Site.Data.evaluators.evaluators }}
+      <div class="eval-card" data-name="{{ .name }}" data-desc="{{ .description }}" data-tags="{{ delimit .tags " " }}" data-author="{{ .author }}">
+        <div class="eval-card-header">
+          <div class="eval-card-icon">
+            {{ if eq .language "python" }}
+              <span class="lang-icon lang-python">py</span>
+            {{ else if eq .language "javascript" }}
+              <span class="lang-icon lang-js">js</span>
+            {{ else if eq .language "typescript" }}
+              <span class="lang-icon lang-ts">ts</span>
+            {{ else }}
+              <span class="lang-icon">&#x2699;</span>
+            {{ end }}
+          </div>
+          <div class="eval-card-meta">
+            <h3>{{ .name }}</h3>
+            <span class="eval-card-author">by {{ .author }}</span>
+          </div>
+        </div>
+        <p class="eval-card-desc">{{ .description }}</p>
+        <div class="eval-card-tags">
+          {{ range .tags }}
+          <span class="eval-tag">{{ . }}</span>
+          {{ end }}
+        </div>
+        <div class="eval-card-footer">
+          <a href="https://github.com/agentevals-dev/evaluators/tree/main/{{ .path | path.Dir }}" target="_blank" class="eval-card-link">
+            View source &#8599;
+          </a>
+          <span class="eval-card-lang">{{ .language }}</span>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+
+    <!-- Empty state (hidden by default, shown by JS when search has no results) -->
+    <div class="eval-empty" id="evalEmpty" style="display:none;">
+      <p>No evaluators match your search.</p>
+    </div>
+
+    <!-- How to Use -->
+    <div class="eval-howto">
+      <h2>Using Community Evaluators</h2>
+      <div class="eval-howto-grid">
+        <div class="eval-howto-step">
+          <div class="step-number">1</div>
+          <h3>Reference in eval config</h3>
+          <div class="eval-howto-code">
+<pre>metrics:
+  - name: response_quality
+    type: remote
+    source: github
+    ref: evaluators/response_quality/response_quality.py
+    threshold: 0.7
+    config:
+      min_response_length: 20</pre>
+          </div>
+        </div>
+        <div class="eval-howto-step">
+          <div class="step-number">2</div>
+          <h3>Run as usual</h3>
+          <div class="eval-howto-code">
+<pre><span class="cmd">agentevals</span> run traces/my_trace.json \
+  <span class="flag">--config</span> <span class="string">eval_config.yaml</span> \
+  <span class="flag">--eval-set</span> <span class="string">eval_set.json</span></pre>
+          </div>
+          <p class="eval-howto-note">Evaluators are downloaded automatically and cached in <code>~/.cache/agentevals/evaluators/</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit CTA -->
+    <div class="eval-cta">
+      <h2>Build Your Own Evaluator</h2>
+      <p>Evaluators are standalone scoring programs that read EvalInput JSON from stdin and write EvalResult JSON to stdout. Scaffold one in seconds:</p>
+      <div class="eval-howto-code" style="max-width:500px;margin:1.5rem auto;">
+<pre><span class="cmd">pip</span> install agentevals
+<span class="cmd">agentevals</span> evaluator init my_evaluator</pre>
+      </div>
+      <div class="eval-cta-buttons">
+        <a href="https://github.com/agentevals-dev/evaluators#contributing-an-evaluator" target="_blank" class="btn btn-primary">
+          Contribution Guide
+        </a>
+        <a href="https://github.com/agentevals-dev/evaluators/fork" target="_blank" class="btn btn-secondary">
+          Fork the Repo
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <a href="{{ "/" | relURL }}" class="footer-logo">
+      <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
+      <img src="{{ "images/logo-color-transparent.png" | relURL }}" alt="AgentEvals" class="logo-light">
+    </a>
+    <div class="footer-links">
+      <a href="{{ "docs/" | relURL }}">Docs</a>
+      <a href="{{ "evaluators/" | relURL }}">Evaluators</a>
+      <a href="{{ .Site.Params.github }}" target="_blank">GitHub</a>
+      <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
+    </div>
+    <span class="footer-copy">&copy; {{ now.Year }} AgentEvals. Open source under Apache 2.0.</span>
+  </div>
+</footer>
+
+<script>
+function filterEvaluators() {
+  var query = document.getElementById('evalSearch').value.toLowerCase();
+  var cards = document.querySelectorAll('.eval-card');
+  var visible = 0;
+  cards.forEach(function(card) {
+    var name = card.getAttribute('data-name').toLowerCase();
+    var desc = card.getAttribute('data-desc').toLowerCase();
+    var tags = card.getAttribute('data-tags').toLowerCase();
+    var author = card.getAttribute('data-author').toLowerCase();
+    var match = name.indexOf(query) !== -1 || desc.indexOf(query) !== -1 || tags.indexOf(query) !== -1 || author.indexOf(query) !== -1;
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('evalEmpty').style.display = visible === 0 ? '' : 'none';
+}
+</script>
+
+{{ end }}

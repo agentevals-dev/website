@@ -1,0 +1,24 @@
+generatedAt: "2026-03-20T00:02:55Z"
+
+evaluators:
+  - name: peters_evaluator
+    description: "sample evaluator that returns a 0.123 score"
+    language: python
+    path: evaluators/peters_evaluator/peters_evaluator.py
+    tags: ["test","example"]
+    author: peterj
+    lastUpdated: "2026-03-20T00:02:55Z"
+  - name: response_quality
+    description: "Checks that responses are non-empty, meet a minimum length, and don't just echo back the user input"
+    language: python
+    path: evaluators/response_quality/response_quality.py
+    tags: ["quality","response","length"]
+    author: agentevals-dev
+    lastUpdated: "2026-03-20T00:02:55Z"
+  - name: tool_coverage
+    description: "Verifies that each invocation made at least a minimum number of tool calls"
+    language: python
+    path: evaluators/tool_coverage/tool_coverage.py
+    tags: ["tools","coverage","validation"]
+    author: agentevals-dev
+    lastUpdated: "2026-03-20T00:02:55Z"
