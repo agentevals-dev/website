@@ -360,6 +360,11 @@ section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  justify-items: center;
+}
+
+.features-grid .feature-card:last-child:nth-child(3n+1) {
+  grid-column: 2;
 }
 
 @media (max-width: 768px) {
