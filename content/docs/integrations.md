@@ -1,10 +1,10 @@
 ---
 title: "Integrations & Use Cases"
 weight: 2
-description: "Zero-code, SDK, and CLI/CI integration patterns."
+description: "Zero-code, SDK, CLI/CI, and MCP integration patterns."
 ---
 
-AgentEvals can be used in multiple ways depending on your workflow. Evaluate agents with zero code via OTel, programmatically via the SDK, or in CI pipelines with the CLI.
+AgentEvals can be used in multiple ways depending on your workflow. Evaluate agents with zero code via OTel, programmatically via the SDK, in CI pipelines with the CLI, or conversationally through the MCP server.
 
 > For detailed, working examples covering all integration patterns, see the [examples directory](https://github.com/agentevals-dev/agentevals/tree/main/examples) in the repository.
 
@@ -127,3 +127,39 @@ jobs:
           "
 ```
 
+---
+
+## MCP Server
+
+Exposes evaluation tools to MCP clients. A `.mcp.json` at the project root lets Claude Code pick it up automatically.
+
+### Available Tools
+
+| Tool | Requires `serve` | Description |
+|------|:---:|-------------|
+| `list_metrics` | yes | List available metrics |
+| `evaluate_traces` | no | Evaluate local trace files (OTLP or Jaeger) |
+| `list_sessions` | yes | List streaming sessions |
+| `summarize_session` | yes | Structured summary of a session's tool calls |
+| `evaluate_sessions` | yes | Evaluate sessions against a golden reference |
+
+### Setup
+
+```bash
+# Start the MCP server
+uv run agentevals mcp
+
+# Custom server URL
+AGENTEVALS_SERVER_URL=http://localhost:9000 uv run agentevals mcp
+```
+
+The React UI and MCP server share the same in-memory session state and can run simultaneously.
+
+### Claude Code Skills
+
+Two slash-command workflows are available in repos with `.claude/skills/`:
+
+| Skill | What it does |
+|-------|-------------|
+| `/eval` | Score traces or compare sessions against a golden reference |
+| `/inspect` | Turn-by-turn narrative of a live session with anomaly detection |

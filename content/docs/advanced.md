@@ -25,6 +25,25 @@ While the server is running (`agentevals serve`), interactive API documentation 
 
 The OTLP receiver (port 4318) serves its own docs at `http://localhost:4318/docs`.
 
+## MCP Server Tools
+
+| Tool | Requires `serve` | Description |
+|------|:---:|-------------|
+| `list_metrics` | yes | List available metrics |
+| `evaluate_traces` | no | Evaluate local trace files (OTLP or Jaeger) |
+| `list_sessions` | yes | List streaming sessions |
+| `summarize_session` | yes | Structured summary of a session's tool calls |
+| `evaluate_sessions` | yes | Evaluate sessions against a golden reference |
+
+## Claude Code Skills
+
+Two slash-command workflows in `.claude/skills/`, available automatically in repos with the agentevals config:
+
+| Skill | What it does |
+|-------|-------------|
+| `/eval` | Score traces or compare sessions against a golden reference |
+| `/inspect` | Turn-by-turn narrative of a live session with anomaly detection |
+
 ## Development
 
 ```bash
