@@ -1,224 +1,141 @@
-{{ define "main" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Site.Title }}</title>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <div class="bg-grid"></div>
 
-<!-- Navigation -->
-<nav class="nav">
-  <a href="{{ "/" | relURL }}" class="nav-logo">
-    <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
-    <img src="{{ "images/logo-light.png" | relURL }}" alt="AgentEvals" class="logo-light">
-  </a>
-  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">&#9776;</button>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#how-it-works">How It Works</a>
-    <a href="#interfaces">Interfaces</a>
-    <a href="#get-started">Get Started</a>
-    <a href="{{ "docs/" | relURL }}">Docs</a>
-    <a href="{{ "evaluators/" | relURL }}">Evaluators</a>
-    <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
-    <a href="{{ .Site.Params.github }}" target="_blank" class="btn-sm">GitHub</a>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-      <span class="icon-sun">&#9728;</span>
-      <span class="icon-moon">&#9790;</span>
-    </button>
-  </div>
-</nav>
-
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-logo">
-      <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
-      <img src="{{ "images/logo-color-transparent.png" | relURL }}" alt="AgentEvals" class="logo-light">
-    </div>
-    <h1>Ship Agents <span class="highlight">Reliably</span></h1>
-    <p>Benchmark your agents before they hit production. AgentEvals scores performance and inference quality from OpenTelemetry traces — no re-runs, no guesswork.</p>
-    <div class="hero-buttons">
-      <a href="{{ .Site.Params.github }}" target="_blank" class="btn btn-primary">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        View on GitHub
-      </a>
-      <a href="{{ "docs/" | relURL }}" class="btn btn-secondary">Read the Docs</a>
-      <a href="{{ .Site.Params.discord }}" target="_blank" class="btn btn-secondary">
-        Join Discord
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Features -->
-<section id="features" class="container">
-  <div class="section-header">
-    <h2>Why AgentEvals?</h2>
-    <p>Evaluate agent behavior from real traces, not synthetic replays.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f50d;</div>
-      <h3>Trace-Based Evaluation</h3>
-      <p>Parse OTLP streams and Jaeger JSON traces to evaluate agent behavior directly from production or test telemetry data.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x26a1;</div>
-      <h3>No Re-Running Required</h3>
-      <p>Score agent behavior from existing traces. No need to replay expensive LLM calls or wait for agent re-execution.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f3af;</div>
-      <h3>Golden Eval Sets</h3>
-      <p>Define expected behaviors as golden eval sets and score traces against them using ADK's evaluation framework.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f4ca;</div>
-      <h3>Trajectory Matching</h3>
-      <p>Compare agent trajectories with strict, unordered, subset, or superset matching modes for flexible evaluation.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f916;</div>
-      <h3>LLM-as-Judge</h3>
-      <p>Use LLM-powered evaluation for nuanced scoring of agent behavior without requiring reference trajectories.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f6e0;</div>
-      <h3>CI/CD Integration</h3>
-      <p>Run evaluations in your pipeline with the CLI. Gate deployments on agent behavior quality scores.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#x1f9e9;</div>
-      <h3>Custom Evaluators</h3>
-      <p>Write custom scoring logic in Python, JavaScript, or any language. Share and discover evaluators through the community registry.</p>
-    </div>
-  </div>
-</section>
-
-<!-- How It Works -->
-<section id="how-it-works" class="how-it-works">
-  <div class="container">
-    <div class="section-header">
-      <h2>How It Works</h2>
-      <p>Three steps from traces to scores.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-number">1</div>
-        <h3>Collect Traces</h3>
-        <p>Instrument your agent with OpenTelemetry or export Jaeger JSON traces from your observability platform.</p>
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Open source • Python SDK • OpenTelemetry native
       </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <h3>Define Eval Sets</h3>
-        <p>Create golden evaluation sets that describe expected agent behaviors, tool calls, and trajectories.</p>
+      <h1>Score your AI agent behavior from traces.</h1>
+      <p class="hero-subtitle">
+        AgentEvals is the open-source Python framework for scoring AI agent performance and behavior
+        from OpenTelemetry traces. Test prompts, tools, memory, and workflows without re-running your agents.
+      </p>
+      <div class="hero-cta">
+        <a href="/docs/quick-start/" class="btn btn-primary">Quick Start</a>
+        <a href="https://github.com/agentevals-dev/agentevals" class="btn btn-secondary" target="_blank" rel="noopener">GitHub</a>
       </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <h3>Score &amp; Report</h3>
-        <p>Run evaluations via CLI or Web UI. Get detailed scores and pass/fail results.</p>
+      <div class="hero-meta">
+        <span>CLI</span>
+        <span>Custom Evaluators</span>
+        <span>Web UI</span>
+        <span>CI/CD</span>
       </div>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- Interfaces -->
-<section id="interfaces" class="interfaces">
-  <div class="container">
-    <div class="section-header">
-      <h2>Three Ways to Evaluate</h2>
-      <p>Choose the interface that fits your workflow.</p>
-    </div>
-    <div class="interfaces-grid interfaces-grid-2">
-      <div class="interface-card">
-        <div class="interface-icon">&#x2328;</div>
-        <h3>CLI</h3>
-        <p>Script evaluations and integrate into CI/CD pipelines. Pipe in traces, get scores out. Built for automation.</p>
+  <main>
+    <section class="features section">
+      <div class="section-header">
+        <span class="section-label">Why AgentEvals</span>
+        <h2>Evaluation that matches how agents actually run.</h2>
+        <p>Traditional evals re-run entire workflows. AgentEvals scores the traces you already collect, so you can measure behavior in realistic conditions.</p>
       </div>
-      <div class="interface-card">
-        <div class="interface-icon">&#x1f5a5;</div>
-        <h3>Web UI</h3>
-        <p>Visually inspect traces and interactively evaluate agent behavior. Browse results, compare runs, and drill into details.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- Custom Evaluators CTA -->
-<section class="evaluators-cta">
-  <div class="container">
-    <div class="evaluators-cta-inner">
-      <div class="evaluators-cta-text">
-        <h2>Build Your Own Evaluators</h2>
-        <p>Write custom scoring logic in Python, JavaScript, or any language. Share it with the community through our evaluator registry.</p>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon">◉</div>
+          <h3>Trace-native evaluation</h3>
+          <p>Built on OpenTelemetry traces so you can evaluate real production-like runs without replaying agent execution.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">◈</div>
+          <h3>Flexible scoring</h3>
+          <p>Combine built-in evaluators with custom Python logic to measure correctness, tool usage, memory behavior, and more.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">◎</div>
+          <h3>Works in your workflow</h3>
+          <p>Run locally with the CLI, automate in CI/CD, or explore results visually in the web UI.</p>
+        </article>
       </div>
-      <div class="evaluators-cta-actions">
-        <a href="{{ "evaluators/" | relURL }}" class="btn btn-primary">Browse Evaluators</a>
-        <a href="https://github.com/agentevals-dev/evaluators#contributing-an-evaluator" target="_blank" class="btn btn-secondary">Submit Your Own</a>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<!-- Get Started -->
-<section id="get-started" class="code-section">
-  <div class="container">
-    <div class="section-header">
-      <h2>Get Started</h2>
-      <p>Up and running in seconds.</p>
-    </div>
-    <div class="code-block">
-      <div class="code-header">
-        <div class="code-dots">
-          <span></span><span></span><span></span>
+    <section class="workflow section">
+      <div class="section-header">
+        <span class="section-label">How it works</span>
+        <h2>From traces to scores in three steps.</h2>
+      </div>
+
+      <div class="workflow-steps">
+        <div class="workflow-step">
+          <span class="step-number">01</span>
+          <h3>Collect traces</h3>
+          <p>Instrument your agent with OpenTelemetry and emit traces for prompts, tool calls, memory operations, and outputs.</p>
         </div>
-        <span class="code-label">terminal</span>
+        <div class="workflow-step">
+          <span class="step-number">02</span>
+          <h3>Define evaluators</h3>
+          <p>Choose built-in evaluators or create your own to score the behaviors that matter for your agent.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="step-number">03</span>
+          <h3>Run evaluations</h3>
+          <p>Score trace datasets through the CLI or web UI and compare results across prompts, models, or tool strategies.</p>
+        </div>
       </div>
-      <div class="code-body">
-<pre><span class="comment"># Install from release wheel</span>
-<span class="cmd">pip</span> install agentevals-&lt;version&gt;-py3-none-any.whl
+    </section>
 
-<span class="comment"># Run an evaluation against a trace</span>
-<span class="cmd">agentevals</span> run samples/helm.json \
-  <span class="flag">--eval-set</span> <span class="string">samples/eval_set_helm.json</span> \
-  <span class="flag">-m</span> <span class="string">tool_trajectory_avg_score</span>
-
-<span class="comment"># Start the web UI</span>
-<span class="cmd">agentevals</span> serve
-
-</pre>
+    <section class="docs-preview section">
+      <div class="section-header">
+        <span class="section-label">Docs</span>
+        <h2>Start with the path that fits your workflow.</h2>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- CTA -->
-<section class="cta">
-  <div class="cta-content">
-    <h2>Start Evaluating Your Agents</h2>
-    <p>Open source. Trace-driven. No re-runs needed.</p>
-    <div class="cta-buttons">
-      <a href="{{ .Site.Params.github }}" target="_blank" class="btn btn-primary">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        GitHub
-      </a>
-      <a href="{{ .Site.Params.discord }}" target="_blank" class="btn btn-secondary">
-        Join Discord
-      </a>
-    </div>
-  </div>
-</section>
+      <div class="docs-grid">
+        {{ range where .Site.RegularPages "Section" "docs" }}
+          <a class="doc-card" href="{{ .RelPermalink }}">
+            <div>
+              <h3>{{ .Title }}</h3>
+              <p>{{ .Description }}</p>
+            </div>
+            <span class="doc-arrow">→</span>
+          </a>
+        {{ end }}
+      </div>
+    </section>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-content">
-    <a href="{{ "/" | relURL }}" class="footer-logo">
-      <img src="{{ "images/logo-color.png" | relURL }}" alt="AgentEvals" class="logo-dark">
-      <img src="{{ "images/logo-light.png" | relURL }}" alt="AgentEvals" class="logo-light">
-    </a>
-    <div class="footer-links">
-      <a href="{{ "docs/" | relURL }}">Docs</a>
-      <a href="{{ .Site.Params.github }}" target="_blank">GitHub</a>
-      <a href="{{ .Site.Params.discord }}" target="_blank">Discord</a>
-      <a href="https://github.com/agentregistry-dev/" target="_blank">AgentRegistry</a>
-    </div>
-    <span class="footer-copy">&copy; {{ now.Year }} AgentEvals. Open source under Apache 2.0.</span>
-  </div>
-</footer>
+    <section class="usage section">
+      <div class="section-header">
+        <span class="section-label">Usage</span>
+        <h2>Two ways to evaluate.</h2>
+        <p>Use the CLI for fast, scriptable scoring or the Web UI for visual exploration of evaluation results.</p>
+      </div>
 
-{{ end }}
+      <div class="usage-grid">
+        <article class="usage-card">
+          <h3>CLI</h3>
+          <p>Run evaluations locally or in CI with straightforward commands and structured outputs.</p>
+          <pre><code>agentevals eval run config.yaml</code></pre>
+        </article>
+        <article class="usage-card">
+          <h3>Web UI</h3>
+          <p>Inspect trace datasets, compare runs, and review evaluator outputs in a visual interface.</p>
+          <pre><code>agentevals ui</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta section">
+      <div class="cta-card">
+        <span class="section-label">Get started</span>
+        <h2>Bring evaluation into your agent development loop.</h2>
+        <p>Install AgentEvals, connect your traces, and start measuring how your agent behaves in the real world.</p>
+        <div class="hero-cta">
+          <a href="/docs/quick-start/" class="btn btn-primary">Read the docs</a>
+          <a href="https://github.com/agentevals-dev/agentevals" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
