@@ -11,7 +11,7 @@ Grab a wheel from the [releases page](https://github.com/agentevals-dev/agenteva
 ```bash
 pip install agentevals-<version>-py3-none-any.whl
 
-# For MCP server and live streaming support:
+# For live streaming support:
 pip install "agentevals-<version>-py3-none-any.whl[live]"
 ```
 
@@ -61,6 +61,6 @@ Live-streamed traces appear in the "Local Dev" tab, grouped by session ID.
 
 ## What's Next
 
-- [Integrations](/docs/integrations/) — Zero-code, SDK, CLI/CI, and MCP integration patterns
+- [Integrations](/docs/integrations/) — Zero-code, SDK, and CLI/CI integration patterns
 - [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators
 - [UI Walkthrough](/docs/ui-walkthrough/) — Deep dive into the web UI

@@ -82,6 +82,11 @@
       <h3>CI/CD Integration</h3>
       <p>Run evaluations in your pipeline with the CLI. Gate deployments on agent behavior quality scores.</p>
     </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#x1f9e9;</div>
+      <h3>Custom Evaluators</h3>
+      <p>Write custom scoring logic in Python, JavaScript, or any language. Share and discover evaluators through the community registry.</p>
+    </div>
   </div>
 </section>
 
@@ -106,7 +111,7 @@
       <div class="step">
         <div class="step-number">3</div>
         <h3>Score &amp; Report</h3>
-        <p>Run evaluations via CLI, Web UI, or MCP server. Get detailed scores and pass/fail results.</p>
+        <p>Run evaluations via CLI or Web UI. Get detailed scores and pass/fail results.</p>
       </div>
     </div>
   </div>
@@ -119,7 +124,7 @@
       <h2>Three Ways to Evaluate</h2>
       <p>Choose the interface that fits your workflow.</p>
     </div>
-    <div class="interfaces-grid">
+    <div class="interfaces-grid interfaces-grid-2">
       <div class="interface-card">
         <div class="interface-icon">&#x2328;</div>
         <h3>CLI</h3>
@@ -129,11 +134,6 @@
         <div class="interface-icon">&#x1f5a5;</div>
         <h3>Web UI</h3>
         <p>Visually inspect traces and interactively evaluate agent behavior. Browse results, compare runs, and drill into details.</p>
-      </div>
-      <div class="interface-card">
-        <div class="interface-icon">&#x1f50c;</div>
-        <h3>MCP Server</h3>
-        <p>Run evaluations directly from Claude Code conversations. The MCP server integrates agentevals into your AI workflow.</p>
       </div>
     </div>
   </div>
@@ -181,8 +181,7 @@
 <span class="comment"># Start the web UI</span>
 <span class="cmd">agentevals</span> serve
 
-<span class="comment"># Start the MCP server</span>
-<span class="cmd">agentevals</span> mcp</pre>
+</pre>
       </div>
     </div>
   </div>

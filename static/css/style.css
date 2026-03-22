@@ -483,12 +483,25 @@ section {
 }
 
 .code-block {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #0d0d14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   overflow: hidden;
   max-width: 700px;
   margin: 0 auto;
+}
+
+[data-theme="light"] .code-block {
+  background: #1e1e2e;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .code-body pre {
+  color: #e0e0e8;
+}
+
+[data-theme="light"] .code-body .comment {
+  color: #6b7280;
 }
 
 .code-header {
@@ -498,6 +511,15 @@ section {
   padding: 0.75rem 1.25rem;
   background: var(--code-header-bg);
   border-bottom: 1px solid var(--border);
+}
+
+[data-theme="light"] .code-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .code-label {
+  color: #6b7280;
 }
 
 .code-dots {
@@ -531,7 +553,7 @@ section {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .code-body .cmd {
@@ -539,7 +561,7 @@ section {
 }
 
 [data-theme="light"] .code-body .cmd {
-  color: var(--purple-dark);
+  color: var(--purple-light);
 }
 
 .code-body .flag {
@@ -547,7 +569,7 @@ section {
 }
 
 [data-theme="light"] .code-body .flag {
-  color: #16a34a;
+  color: #22c55e;
 }
 
 .code-body .string {
@@ -555,7 +577,7 @@ section {
 }
 
 [data-theme="light"] .code-body .string {
-  color: #d97706;
+  color: #fbbf24;
 }
 
 .code-body .comment {
@@ -630,8 +652,15 @@ section {
   gap: 1.5rem;
 }
 
+.interfaces-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
-  .interfaces-grid {
+  .interfaces-grid,
+  .interfaces-grid-2 {
     grid-template-columns: 1fr;
   }
 }
@@ -926,12 +955,21 @@ section {
 }
 
 .docs-article pre {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #0d0d14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 1.25rem;
   overflow-x: auto;
   margin-bottom: 1.5rem;
+}
+
+[data-theme="light"] .docs-article pre {
+  background: #1e1e2e;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .docs-article pre code {
+  color: #e0e0e8;
 }
 
 .docs-article pre code {
@@ -940,7 +978,7 @@ section {
   padding: 0;
   font-size: 0.85rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .docs-article table {
@@ -1338,11 +1376,8 @@ section {
 }
 
 .eval-howto-code pre .cmd { color: var(--purple-light); }
-[data-theme="light"] .eval-howto-code pre .cmd { color: var(--purple-dark); }
 .eval-howto-code pre .flag { color: #22c55e; }
-[data-theme="light"] .eval-howto-code pre .flag { color: #16a34a; }
 .eval-howto-code pre .string { color: #fbbf24; }
-[data-theme="light"] .eval-howto-code pre .string { color: #d97706; }
 
 .eval-howto-note {
   margin-top: 1rem;
