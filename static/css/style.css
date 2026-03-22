@@ -531,7 +531,7 @@ section {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .code-body .cmd {
@@ -559,7 +559,7 @@ section {
 }
 
 .code-body .comment {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* Evaluators CTA (homepage) */
@@ -926,7 +926,7 @@ section {
 }
 
 .docs-article pre {
-  background: var(--bg-card);
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.25rem;
@@ -940,7 +940,7 @@ section {
   padding: 0;
   font-size: 0.85rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .docs-article table {
