@@ -1,141 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ .Site.Title }}</title>
-  {{ partial "head.html" . }}
-</head>
-<body>
-  <div class="bg-grid"></div>
+{{ define "main" }}
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">OpenTelemetry-native agent evaluation</p>
+        <h1>Score AI agents from traces — no reruns required</h1>
+        <p class="lead">
+          agentevals turns OpenTelemetry traces into repeatable, rubric-based scores for tool use,
+          handoffs, planning, and other agent behaviors.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/docs/quick-start/">Start with the CLI</a>
+          <a class="btn btn-secondary" href="/docs/ui-walkthrough/">Open Web</a>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span></span><span></span><span></span>
+          </div>
+          <pre><code>$ uv tool install agentevals
+$ agentevals score traces.jsonl \
+    --config agentevals.yaml
 
-  <header class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        Open source • Python SDK • OpenTelemetry native
-      </div>
-      <h1>Score your AI agent behavior from traces.</h1>
-      <p class="hero-subtitle">
-        AgentEvals is the open-source Python framework for scoring AI agent performance and behavior
-        from OpenTelemetry traces. Test prompts, tools, memory, and workflows without re-running your agents.
-      </p>
-      <div class="hero-cta">
-        <a href="/docs/quick-start/" class="btn btn-primary">Quick Start</a>
-        <a href="https://github.com/agentevals-dev/agentevals" class="btn btn-secondary" target="_blank" rel="noopener">GitHub</a>
-      </div>
-      <div class="hero-meta">
-        <span>CLI</span>
-        <span>Custom Evaluators</span>
-        <span>Web UI</span>
-        <span>CI/CD</span>
-      </div>
+✔ 184 traces scored
+✔ 91% tool-call success
+✔ Mean rubric score: 4.4 / 5.0</code></pre>
+        </div>
+      </aside>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <section class="features section">
+  <section class="section">
+    <div class="container">
       <div class="section-header">
-        <span class="section-label">Why AgentEvals</span>
-        <h2>Evaluation that matches how agents actually run.</h2>
-        <p>Traditional evals re-run entire workflows. AgentEvals scores the traces you already collect, so you can measure behavior in realistic conditions.</p>
+        <p class="eyebrow">Why agentevals</p>
+        <h2>Evaluate behavior from the telemetry you already collect</h2>
+        <p>
+          Score agents against consistent rubrics using OpenTelemetry traces rather than replaying runs.
+          Keep evaluations close to your production workflows and compare changes over time.
+        </p>
       </div>
-
       <div class="feature-grid">
         <article class="feature-card">
-          <div class="feature-icon">◉</div>
-          <h3>Trace-native evaluation</h3>
-          <p>Built on OpenTelemetry traces so you can evaluate real production-like runs without replaying agent execution.</p>
+          <h3>No reruns</h3>
+          <p>Use recorded traces to evaluate real executions after the fact.</p>
         </article>
         <article class="feature-card">
-          <div class="feature-icon">◈</div>
-          <h3>Flexible scoring</h3>
-          <p>Combine built-in evaluators with custom Python logic to measure correctness, tool usage, memory behavior, and more.</p>
+          <h3>Behavior-first scoring</h3>
+          <p>Measure task completion, tool use quality, handoffs, latency, and more.</p>
         </article>
         <article class="feature-card">
-          <div class="feature-icon">◎</div>
-          <h3>Works in your workflow</h3>
-          <p>Run locally with the CLI, automate in CI/CD, or explore results visually in the web UI.</p>
+          <h3>Built on OpenTelemetry</h3>
+          <p>Plug into existing observability pipelines instead of inventing a parallel eval stack.</p>
         </article>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="workflow section">
+  <section class="section alt">
+    <div class="container">
       <div class="section-header">
-        <span class="section-label">How it works</span>
-        <h2>From traces to scores in three steps.</h2>
+        <p class="eyebrow">How it works</p>
+        <h2>Two ways to evaluate</h2>
       </div>
-
-      <div class="workflow-steps">
-        <div class="workflow-step">
-          <span class="step-number">01</span>
-          <h3>Collect traces</h3>
-          <p>Instrument your agent with OpenTelemetry and emit traces for prompts, tool calls, memory operations, and outputs.</p>
-        </div>
-        <div class="workflow-step">
-          <span class="step-number">02</span>
-          <h3>Define evaluators</h3>
-          <p>Choose built-in evaluators or create your own to score the behaviors that matter for your agent.</p>
-        </div>
-        <div class="workflow-step">
-          <span class="step-number">03</span>
-          <h3>Run evaluations</h3>
-          <p>Score trace datasets through the CLI or web UI and compare results across prompts, models, or tool strategies.</p>
-        </div>
+      <div class="steps-grid two-up">
+        <article class="step-card">
+          <span class="step-number">1</span>
+          <h3>CLI workflow</h3>
+          <p>
+            Run evaluations locally or in CI with config files and reproducible commands.
+          </p>
+          <a href="/docs/quick-start/">Open the CLI guide →</a>
+        </article>
+        <article class="step-card">
+          <span class="step-number">2</span>
+          <h3>Web workflow</h3>
+          <p>
+            Explore traces, inspect scores, and review rubric results in the browser.
+          </p>
+          <a href="/docs/ui-walkthrough/">Open the Web guide →</a>
+        </article>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="docs-preview section">
+  <section class="section">
+    <div class="container">
       <div class="section-header">
-        <span class="section-label">Docs</span>
-        <h2>Start with the path that fits your workflow.</h2>
+        <p class="eyebrow">Docs</p>
+        <h2>Start where you are</h2>
       </div>
-
       <div class="docs-grid">
-        {{ range where .Site.RegularPages "Section" "docs" }}
-          <a class="doc-card" href="{{ .RelPermalink }}">
-            <div>
-              <h3>{{ .Title }}</h3>
-              <p>{{ .Description }}</p>
-            </div>
-            <span class="doc-arrow">→</span>
-          </a>
-        {{ end }}
+        <a class="docs-card" href="/docs/quick-start/">
+          <h3>Quick start</h3>
+          <p>Install agentevals, run your first scoring pass, and inspect the output.</p>
+        </a>
+        <a class="docs-card" href="/docs/integrations/">
+          <h3>Integrations</h3>
+          <p>Connect agentevals with your existing tracing and observability stack.</p>
+        </a>
+        <a class="docs-card" href="/docs/custom-evaluators/">
+          <h3>Custom evaluators</h3>
+          <p>Define your own scoring logic and tailor rubrics to your agents.</p>
+        </a>
+        <a class="docs-card" href="/docs/ui-walkthrough/">
+          <h3>Web walkthrough</h3>
+          <p>See how to inspect traces and scores with the browser-based interface.</p>
+        </a>
       </div>
-    </section>
-
-    <section class="usage section">
-      <div class="section-header">
-        <span class="section-label">Usage</span>
-        <h2>Two ways to evaluate.</h2>
-        <p>Use the CLI for fast, scriptable scoring or the Web UI for visual exploration of evaluation results.</p>
-      </div>
-
-      <div class="usage-grid">
-        <article class="usage-card">
-          <h3>CLI</h3>
-          <p>Run evaluations locally or in CI with straightforward commands and structured outputs.</p>
-          <pre><code>agentevals eval run config.yaml</code></pre>
-        </article>
-        <article class="usage-card">
-          <h3>Web UI</h3>
-          <p>Inspect trace datasets, compare runs, and review evaluator outputs in a visual interface.</p>
-          <pre><code>agentevals ui</code></pre>
-        </article>
-      </div>
-    </section>
-
-    <section class="cta section">
-      <div class="cta-card">
-        <span class="section-label">Get started</span>
-        <h2>Bring evaluation into your agent development loop.</h2>
-        <p>Install AgentEvals, connect your traces, and start measuring how your agent behaves in the real world.</p>
-        <div class="hero-cta">
-          <a href="/docs/quick-start/" class="btn btn-primary">Read the docs</a>
-          <a href="https://github.com/agentevals-dev/agentevals" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
-        </div>
-      </div>
-    </section>
-  </main>
-</body>
-</html>
+    </div>
+  </section>
+{{ end }}
