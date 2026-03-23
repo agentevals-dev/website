@@ -1,66 +1,42 @@
 ---
-title: "Quick Start"
+title: Quick Start
 weight: 1
-description: "Get up and running with AgentEvals in under 5 minutes."
+description: Install agentevals, point it at your traces, and run your first evaluation.
 ---
 
-## Installation
+agentevals scores AI agent behavior from existing OpenTelemetry traces — no re-runs required.
 
-Grab a wheel from the [releases page](https://github.com/agentevals-dev/agentevals/releases). The **core** wheel has the CLI and REST API. The **bundle** wheel adds streaming and the embedded web UI.
-
-```bash
-pip install agentevals-<version>-py3-none-any.whl
-
-# For live streaming support:
-pip install "agentevals-<version>-py3-none-any.whl[live]"
-```
-
-**From source** with `uv` or Nix:
+## Install the CLI
 
 ```bash
-uv sync
-# or: nix develop .
+pip install agentevals-cli
 ```
 
-See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build instructions.
+## Run your first evaluation
 
-## CLI Quick Start
-
-Run an evaluation against a sample trace:
+Point the CLI at an OTLP endpoint and evaluate the traces it finds.
 
 ```bash
-uv run agentevals run samples/helm.json \
-  --eval-set samples/eval_set_helm.json \
-  -m tool_trajectory_avg_score
+agentevals run \
+  --otlp-endpoint http://localhost:6006/v1/traces \
+  --model openai/gpt-4o-mini
 ```
 
-List available evaluators:
+If your collector requires auth, add headers:
 
 ```bash
-uv run agentevals evaluator list
+agentevals run \
+  --otlp-endpoint https://collector.example.com/v1/traces \
+  --otlp-header "Authorization=Bearer <token>" \
+  --model openai/gpt-4o-mini
 ```
 
-## Live UI Quick Start
+## What happens under the hood
 
-Start the server with the embedded web UI:
+agentevals reconstructs each traced agent interaction, sends the relevant context to an evaluator model, and writes back structured scores you can inspect in the UI or export in CI.
 
-```bash
-agentevals serve
-```
+## Next steps
 
-Open `http://localhost:8001` to upload traces and eval sets, select metrics, and view results with interactive span trees.
-
-**From source** (two terminals):
-
-```bash
-uv run agentevals serve --dev     # Terminal 1
-cd ui && npm install && npm run dev  # Terminal 2 → http://localhost:5173
-```
-
-Live-streamed traces appear in the "Local Dev" tab, grouped by session ID.
-
-## What's Next
-
-- [Integrations](/docs/integrations/) — Zero-code, SDK, and CLI/CI integration patterns
-- [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators
-- [UI Walkthrough](/docs/ui-walkthrough/) — Deep dive into the web UI
+- Learn how traces, models, and outputs are configured in [Advanced](/docs/advanced/)
+- Add your own scoring logic in [Custom Evaluators](/docs/custom-evaluators/)
+- View and compare runs in the [UI Walkthrough](/docs/ui-walkthrough/)
