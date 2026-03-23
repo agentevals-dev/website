@@ -1,47 +1,33 @@
 ---
-title: "FAQ"
+title: FAQ
 weight: 6
-description: "Frequently asked questions about AgentEvals."
+description: Common questions about how agentevals works and how to deploy it.
 ---
 
-## How does this compare to ADK's evaluations?
+## Does agentevals re-run my agent?
 
-Unlike ADK's LocalEvalService, which couples agent execution with evaluation, agentevals only handles scoring: it takes pre-recorded traces and compares them against expected behavior using metrics like tool trajectory matching, response quality, and LLM-based judgments.
+No. agentevals evaluates behavior from existing OpenTelemetry traces, so you can score what actually happened in production or staging without replaying requests.
 
-However, if you're iterating on your agents locally, you can point your agents to agentevals and you will see rich runtime information in your browser. For more details, use the bundled wheel and explore the Local Development option in the UI.
+## What do I need to get started?
 
-## How does this compare to Bedrock AgentCore's evaluation?
+You need:
 
-AgentCore's evaluation integration (via `strands-agents-evals`) also couples agent execution with evaluation. It re-invokes the agent for each test case, converts the resulting OTel spans to AWS's ADOT format, and scores them against 4 built-in evaluators (Helpfulness, Accuracy, Harmfulness, Relevance) via a cloud API call. This means you need an AWS account, valid credentials, and network access for every evaluation.
+- OpenTelemetry traces from your agent or workflow
+- An evaluator model configured for scoring
+- The CLI installed with `pip install agentevals-cli`
 
-agentevals takes a different approach: it scores pre-recorded traces locally without re-running anything. It works with standard Jaeger JSON and OTLP formats from any framework, supports open-ended metrics (tool trajectory matching, LLM-based judges, custom scorers), and ships with a CLI and web UI. No cloud dependency required.
+## Can I write my own evaluators?
 
-## What trace formats are supported?
+Yes. Install the SDK with `pip install agentevals-evaluator-sdk` and register your Python evaluator class with the CLI.
 
-AgentEvals supports **OTLP** (OpenTelemetry Protocol) with `http/protobuf` and `http/json`, plus **Jaeger JSON** trace exports. Works with any OTel-instrumented framework including LangChain, Strands, Google ADK, and others.
+## Where do results show up?
 
-## Do I need to re-run my agent to evaluate it?
+Results can be written back to your backend, exported in CI, or inspected in the agentevals UI.
 
-No. Record once, score as many times as you want. AgentEvals evaluates from existing traces, so you never need to replay expensive LLM calls.
+## Does this work with any tracing backend?
 
-## What frameworks are supported?
+It works anywhere you can access OpenTelemetry-compatible trace data or an OTLP endpoint that exposes the traces agentevals needs.
 
-Any framework that emits OpenTelemetry spans works out of the box. This includes **LangChain**, **Strands**, **Google ADK**, and any other OTel-instrumented framework. The zero-code integration requires no SDK — just point your agent's OTel exporter to agentevals.
+## Is there a web UI?
 
-## Can I write custom evaluators?
-
-Yes. Evaluators can be written in Python, JavaScript, or any language that reads JSON from stdin and writes JSON to stdout. See the [Custom Evaluators](/docs/custom-evaluators/) page for details.
-
-A Python SDK is available (`pip install agentevals-evaluator-sdk`) for convenience, but it's not required.
-
-## Can I use this in CI/CD?
-
-Absolutely. The CLI is designed for CI integration. Use `--output json` for machine-readable results. See the [CLI & CI/CD section](/docs/integrations/#cli--cicd) for a GitHub Actions example.
-
-## Is there a community evaluator registry?
-
-Yes. Browse community-contributed evaluators on the [Evaluators](/evaluators/) page, or contribute your own to the [evaluators repository](https://github.com/agentevals-dev/evaluators).
-
-## Is AgentEvals open source?
-
-Yes. AgentEvals is open source and available on [GitHub](https://github.com/agentevals-dev/agentevals). Contributions are welcome!
+Yes — see the [UI Walkthrough](/docs/ui-walkthrough/) for the current workflow and screenshots.
