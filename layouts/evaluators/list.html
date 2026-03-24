@@ -95,12 +95,13 @@
           <div class="step-number">1</div>
           <h3>Reference in eval config</h3>
           <div class="eval-howto-code">
-<pre>metrics:
+<pre>evaluators:
   - name: response_quality
     type: remote
     source: github
     ref: evaluators/response_quality/response_quality.py
     threshold: 0.7
+    executor: local
     config:
       min_response_length: 20</pre>
           </div>
