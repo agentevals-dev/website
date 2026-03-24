@@ -6,14 +6,19 @@ description: "Get up and running with AgentEvals in under 5 minutes."
 
 ## Installation
 
-Grab a wheel from the [releases page](https://github.com/agentevals-dev/agentevals/releases). The **core** wheel has the CLI and REST API. The **bundle** wheel adds streaming and the embedded web UI.
+**From PyPI** (recommended): the published package includes the **CLI**, **REST API**, and **embedded web UI**.
 
 ```bash
-pip install agentevals-<version>-py3-none-any.whl
-
-# For live streaming support:
-pip install "agentevals-<version>-py3-none-any.whl[live]"
+pip install agentevals-cli
 ```
+
+Optional extras:
+
+```bash
+pip install "agentevals-cli[live]"        # MCP server (`agentevals mcp`)
+```
+
+**GitHub [releases page](https://github.com/agentevals-dev/agentevals/releases)** also ships **core** wheels (CLI and API only) and **bundle** wheels (with the embedded UI) if you need a specific version or offline `pip install ./path/to.whl`. For MCP support, install with the `[live]` extra the same way as from PyPI (for example `pip install "./your-wheel.whl[live]"`).
 
 **From source** with `uv` or Nix:
 
@@ -29,7 +34,7 @@ See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVE
 Run an evaluation against a sample trace:
 
 ```bash
-uv run agentevals run samples/helm.json \
+agentevals run samples/helm.json \
   --eval-set samples/eval_set_helm.json \
   -m tool_trajectory_avg_score
 ```
@@ -37,7 +42,7 @@ uv run agentevals run samples/helm.json \
 List available evaluators:
 
 ```bash
-uv run agentevals evaluator list
+agentevals evaluator list
 ```
 
 ## Live UI Quick Start
