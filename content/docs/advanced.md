@@ -1,36 +1,61 @@
 ---
-title: "Advanced"
-weight: 5
-description: "Deep-dive documentation, REST API, and development setup."
+title: Advanced
+weight: 2
+description: Advanced usage patterns for evaluation backends, deployment, trace compatibility, and scaling agentevals.
 ---
 
-## Docs
+This guide summarizes the main advanced building blocks in agentevals and points to the deeper reference pages.
 
-| Guide | Description |
-|-------|-------------|
-| [Eval Set Format](https://github.com/agentevals-dev/agentevals/blob/main/docs/eval-set-format.md) | Schema, field reference, and examples for golden eval set JSON files |
-| [Custom Evaluators](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) | Write your own scoring logic in Python, JavaScript, or any language |
-| [Live Streaming](https://github.com/agentevals-dev/agentevals/blob/main/docs/streaming.md) | Real-time trace streaming, dev server setup, and session management |
-| [OpenTelemetry Compatibility](https://github.com/agentevals-dev/agentevals/blob/main/docs/otel-compatibility.md) | Supported OTel conventions, message delivery mechanisms, and OTLP receiver |
+## Evaluation architecture
 
-## REST API Reference
+agentevals evaluates agent behavior from OpenTelemetry traces instead of replaying the agent.
 
-While the server is running (`agentevals serve`), interactive API documentation is available at:
+Depending on your needs, you can combine:
 
-| Endpoint | Description |
-|----------|-------------|
-| [`/docs`](http://localhost:8001/docs) | Swagger UI with interactive request builder |
-| [`/redoc`](http://localhost:8001/redoc) | ReDoc reference documentation |
-| [`/openapi.json`](http://localhost:8001/openapi.json) | Raw OpenAPI 3.x schema (for code generation or CI) |
+- **built-in metrics** for fast trace-native scoring
+- **custom evaluators** for Python-defined logic tailored to your app
+- **delegated backends** when you want an external system to judge outputs
 
-The OTLP receiver (port 4318) serves its own docs at `http://localhost:4318/docs`.
+The initial delegated option is the [OpenAI Evals API backend](/docs/openai-evals-api/).
 
-## Development
+## Deployment patterns
 
-```bash
-uv run pytest                      # run tests
-uv run agentevals serve --dev      # backend
-cd ui && npm run dev               # frontend (separate terminal)
-```
+agentevals can run:
 
-See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build tiers, Makefile targets, and Nix setup. To contribute, see [CONTRIBUTING.md](https://github.com/agentevals-dev/agentevals/blob/main/CONTRIBUTING.md).
+- locally during development
+- in containers for reproducible environments
+- on Kubernetes using the project Helm chart
+
+For cluster deployment details, configuration knobs, and install examples, see [Kubernetes & Helm](/docs/kubernetes-helm/).
+
+## Trace model and compatibility
+
+The quality of evaluation depends on the shape and completeness of your traces.
+
+If your agent framework emits OpenTelemetry data with different conventions, review [OTel Compatibility](/docs/otel-compatibility/) to understand what agentevals expects and how to adapt inputs.
+
+## Eval definitions
+
+As eval setups grow, it helps to standardize how datasets, evaluators, and metadata are represented.
+
+See [Eval Set Format](/docs/eval-set-format/) for the structure used by agentevals.
+
+## Live and incremental processing
+
+If you want to evaluate data continuously rather than in one batch, see [Streaming](/docs/streaming/).
+
+## Extending agentevals
+
+If built-in metrics are not enough, use [Custom Evaluators](/docs/custom-evaluators/) to implement project-specific scoring logic.
+
+## Recommended reading order
+
+For teams adopting newer v0.6.3 capabilities, this is a good progression:
+
+1. [Quick Start](/docs/quick-start/)
+2. [Eval Set Format](/docs/eval-set-format/)
+3. [Custom Evaluators](/docs/custom-evaluators/)
+4. [OpenAI Evals API backend](/docs/openai-evals-api/)
+5. [Kubernetes & Helm](/docs/kubernetes-helm/)
+6. [OTel Compatibility](/docs/otel-compatibility/)
+7. [Streaming](/docs/streaming/)
