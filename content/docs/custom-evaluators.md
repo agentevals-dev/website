@@ -1,108 +1,86 @@
 ---
-title: "Custom Evaluators"
+title: Custom Evaluators
 weight: 3
-description: "Write your own scoring logic in Python, JavaScript, or any language."
+description: Define custom evaluation logic for agentevals when built-in metrics are not enough.
 ---
 
-Beyond the built-in metrics, you can write your own evaluators in Python, JavaScript, or any language. An evaluator is any program that reads JSON from stdin and writes a score to stdout.
+Custom evaluators let you add project-specific scoring logic on top of the trace data agentevals extracts.
 
-> For the comprehensive guide, see [custom-evaluators.md](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) in the repository.
+Use custom evaluators when:
 
-## Scaffold an Evaluator
+- you need domain-specific scoring rules
+- built-in metrics do not capture the behavior you care about
+- you want deterministic checks alongside model-based judges
+- you want to combine trace metadata with output inspection
 
-```bash
-agentevals evaluator init my_evaluator
-```
+## When to use custom evaluators vs delegated backends
 
-This creates a directory with boilerplate and a manifest:
+Use **custom evaluators** when the evaluation logic should live in your own codebase.
 
-```
-my_evaluator/
-├── my_evaluator.py     # your scoring logic
-└── evaluator.yaml      # metadata manifest
-```
+Use a **delegated backend** such as the [OpenAI Evals API backend](/docs/openai-evals-api/) when you want agentevals to package data and send judging to an external evaluation system.
 
-You can also list supported runtimes and generate config snippets:
+## What custom evaluators operate on
 
-```bash
-agentevals evaluator runtimes              # show supported languages
-agentevals evaluator config my_evaluator \
-  --path ./evaluators/my_evaluator.py      # generate config snippet
-```
+Custom evaluators work on normalized data extracted from traces. In practice, that means you can reason about:
 
-## Implement Scoring Logic
+- prompts and responses
+- tool calls and tool results
+- metadata attached to spans or traces
+- expected outputs or dataset annotations, when present
 
-Your function receives an `EvalInput` with the agent's invocations and returns an `EvalResult` with a score between 0.0 and 1.0.
+The exact structure depends on your eval configuration and trace contents.
 
-```python
-from agentevals_evaluator_sdk import EvalInput, EvalResult, evaluator
+## General workflow
 
-@evaluator
-def my_evaluator(input: EvalInput) -> EvalResult:
-    scores = []
-    for inv in input.invocations:
-        # Your scoring logic here
-        score = 1.0
-        scores.append(score)
+1. define the eval set and metrics you want to run
+2. implement a Python evaluator for your scoring logic
+3. register or reference it from your eval configuration
+4. run agentevals against your trace data
+5. inspect the resulting scores in CLI or UI
 
-    return EvalResult(
-        score=sum(scores) / len(scores) if scores else 0.0,
-        per_invocation_scores=scores,
-    )
+## Good evaluator design principles
 
-if __name__ == "__main__":
-    my_evaluator.run()
-```
+A strong custom evaluator is usually:
 
-Install the SDK standalone with `pip install agentevals-evaluator-sdk` (no heavy dependencies).
+- **focused** on one behavior or failure mode
+- **repeatable** so results are easy to compare over time
+- **well-named** so metrics are readable in reports
+- **trace-aware** so it relies on durable attributes instead of brittle formatting assumptions
 
-## Reference in Eval Config
+## Common patterns
 
-```yaml
-# eval_config.yaml
-evaluators:
-  - name: tool_trajectory_avg_score
-    type: builtin
+### Deterministic checks
 
-  - name: my_evaluator
-    type: code
-    path: ./evaluators/my_evaluator.py
-    threshold: 0.7
-```
+Examples:
 
-```bash
-agentevals run trace.json --config eval_config.yaml --eval-set eval_set.json
-```
+- required tool was called
+- forbidden tool was not called
+- final answer included a required field
+- workflow completed within a step limit
 
-## Community Evaluators
+### Rubric-based scoring
 
-Community evaluators can be referenced directly from the shared [evaluators repository](https://github.com/agentevals-dev/evaluators) using `type: remote`:
+Examples:
 
-```yaml
-evaluators:
-  - name: response_quality
-    type: remote
-    source: github
-    ref: evaluators/response_quality/response_quality.py
-    threshold: 0.7
-    config:
-      min_response_length: 20
-```
+- answer relevance
+- factual grounding against context
+- adherence to response format
+- success at completing a user task
 
-Browse available community evaluators on the [Evaluators](/evaluators/) page, or contribute your own.
+### Hybrid scoring
 
-## Supported Languages
+Many teams combine deterministic checks with model-based judging. For example:
 
-Evaluators can be written in any language that reads JSON from stdin and writes JSON to stdout.
+- fail if a critical tool call is missing
+- otherwise apply a quality rubric score
 
-| Language | Extension | SDK available |
-|---|---|---|
-| Python | `.py` | `pip install agentevals-evaluator-sdk` |
-| JavaScript | `.js` | No SDK yet — just read stdin, write stdout |
-| TypeScript | `.ts` | No SDK yet — just read stdin, write stdout |
+## Related docs
 
-## Further Reading
+- [Eval Set Format](/docs/eval-set-format/)
+- [OTel Compatibility](/docs/otel-compatibility/)
+- [OpenAI Evals API backend](/docs/openai-evals-api/)
+- [Streaming](/docs/streaming/)
 
-- [Custom Evaluators Guide](https://github.com/agentevals-dev/agentevals/blob/main/docs/custom-evaluators.md) — Full protocol reference
-- [Community Evaluators](/evaluators/) — Browse and submit evaluators
-- [Eval Set Format](https://github.com/agentevals-dev/agentevals/blob/main/docs/eval-set-format.md) — Schema and field reference for eval set JSON files
+## Recommendation
+
+Start with the smallest evaluator that captures a real product risk. Add more evaluators only when they create a clear signal you intend to track over time.

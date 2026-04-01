@@ -1,68 +1,38 @@
 ---
-title: "UI Walkthrough"
-weight: 4
-description: "Visual guide to the AgentEvals web interface."
+title: UI Walkthrough
+weight: 5
+description: Explore agentevals results in the web UI.
 ---
 
-The AgentEvals Web UI provides a visual interface for uploading traces, running evaluations, and inspecting results with interactive span trees.
+The agentevals UI is the easiest way to inspect evaluation runs and understand how scores were produced.
 
-## Starting the UI
+## What the UI is for
 
-**Installed bundle** (port 8001):
+Use the UI to:
 
-```bash
-agentevals serve
-```
+- browse evaluation runs
+- inspect individual trace-derived results
+- compare scores across runs or datasets
+- review metric outputs and evaluator judgments
 
-**From source** (two terminals):
+## Typical workflow
 
-```bash
-uv run agentevals serve --dev      # Terminal 1
-cd ui && npm install && npm run dev   # Terminal 2 → http://localhost:5173
-```
+1. run evaluations from your trace data
+2. open the UI
+3. select a run or dataset
+4. inspect scores, failures, and trace-level context
 
-## Key Features
+## How it fits with newer features
 
-### Trace Upload & Evaluation
+The UI complements the newer v0.6.3 capabilities:
 
-Upload traces and eval sets, select metrics, and view results. Supports both **Jaeger JSON** and **OTLP** trace formats.
+- if you deploy agentevals with containers or Kubernetes, the UI becomes easier to share across teams
+- if you use delegated evaluation through OpenAI Evals API, the UI remains the place to review resulting outputs in the broader agentevals workflow
+- if you use streaming, the UI helps inspect continuously arriving results
 
-### Interactive Span Trees
+## Related docs
 
-Drill into agent execution with interactive span trees showing:
-- Span timing and hierarchy
-- Tool calls with arguments and results
-- LLM calls with prompts, completions, and token usage
-- Evaluation overlay showing which spans matched criteria
-
-### Live Streaming
-
-Live-streamed traces appear in the **Local Dev** tab, grouped by session ID. Connect any OTel-instrumented agent:
-
-```bash
-# Start the server with dev mode
-uv run agentevals serve --dev
-
-# Point your agent's OTel exporter to agentevals
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-export OTEL_RESOURCE_ATTRIBUTES="agentevals.session_name=my-agent"
-python your_agent.py
-```
-
-Traces stream in real-time. Works with LangChain, Strands, Google ADK, or any OTel-compatible framework.
-
-### Session Management
-
-Sessions are auto-created and grouped by `agentevals.session_name`. Set `agentevals.eval_set_id` to associate traces with an eval set for automatic evaluation.
-
-## REST API
-
-While the server is running, interactive API documentation is available:
-
-| Endpoint | Description |
-|----------|-------------|
-| [`/docs`](http://localhost:8001/docs) | Swagger UI with interactive request builder |
-| [`/redoc`](http://localhost:8001/redoc) | ReDoc reference documentation |
-| [`/openapi.json`](http://localhost:8001/openapi.json) | Raw OpenAPI 3.x schema (for code generation or CI) |
-
-The OTLP receiver (port 4318) serves its own docs at `http://localhost:4318/docs`.
+- [Quick Start](/docs/quick-start/)
+- [Kubernetes & Helm](/docs/kubernetes-helm/)
+- [OpenAI Evals API backend](/docs/openai-evals-api/)
+- [Streaming](/docs/streaming/)

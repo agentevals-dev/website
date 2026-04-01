@@ -1,71 +1,64 @@
 ---
-title: "Quick Start"
+title: Quick Start
 weight: 1
-description: "Get up and running with AgentEvals in under 5 minutes."
+description: Install agentevals, run your first evaluation from OpenTelemetry traces, and learn where to go next.
 ---
 
-## Installation
+agentevals scores AI agent behavior from OpenTelemetry traces without re-running the agent.
 
-**From PyPI** (recommended): the published package includes the **CLI**, **REST API**, and **embedded web UI**.
-
-```bash
-pip install agentevals-cli
-```
-
-Optional extras:
+## Install
 
 ```bash
-pip install "agentevals-cli[live]"        # MCP server (`agentevals mcp`)
+pip install agentevals
 ```
 
-**GitHub [releases page](https://github.com/agentevals-dev/agentevals/releases)** also ships **core** wheels (CLI and API only) and **bundle** wheels (with the embedded UI) if you need a specific version or offline `pip install ./path/to.whl`. For MCP support, install with the `[live]` extra the same way as from PyPI (for example `pip install "./your-wheel.whl[live]"`).
+## What you need
 
-**From source** with `uv` or Nix:
+To evaluate traces, you need:
 
-```bash
-uv sync
-# or: nix develop .
-```
+- OpenTelemetry traces from your agent runs
+- an eval configuration that defines which metrics or evaluators to run
+- optional API keys if you use model-backed or delegated evaluators
 
-See [DEVELOPMENT.md](https://github.com/agentevals-dev/agentevals/blob/main/DEVELOPMENT.md) for build instructions.
+## Basic workflow
 
-## CLI Quick Start
+The standard workflow is:
 
-Run an evaluation against a sample trace:
+1. collect traces from your agent system
+2. load those traces into agentevals
+3. run built-in metrics, custom evaluators, or delegated backends
+4. inspect results in the CLI or UI
 
-```bash
-agentevals run samples/helm.json \
-  --eval-set samples/eval_set_helm.json \
-  -m tool_trajectory_avg_score
-```
+agentevals is designed so evaluation happens from trace data rather than by replaying the original agent execution.
 
-List available evaluators:
+## Typical next steps
 
-```bash
-agentevals evaluator list
-```
+After installation, most teams go in one of these directions:
 
-## Live UI Quick Start
+- **Define evals** using the [Eval Set Format](/docs/eval-set-format/)
+- **Write custom logic** with [Custom Evaluators](/docs/custom-evaluators/)
+- **Use delegated judging** with the [OpenAI Evals API backend](/docs/openai-evals-api/)
+- **Run in production environments** with [Kubernetes & Helm](/docs/kubernetes-helm/)
+- **Understand trace requirements** in [OTel Compatibility](/docs/otel-compatibility/)
+- **Work with live data** using [Streaming](/docs/streaming/)
+- **Inspect results visually** in the [UI Walkthrough](/docs/ui-walkthrough/)
 
-Start the server with the embedded web UI:
+## Deployment options
 
-```bash
-agentevals serve
-```
+agentevals can be used in several ways:
 
-Open `http://localhost:8001` to upload traces and eval sets, select metrics, and view results with interactive span trees.
+- as a local Python package
+- through container images
+- on Kubernetes with the Helm chart
 
-**From source** (two terminals):
+If you are deploying agentevals as a service, start with [Kubernetes & Helm](/docs/kubernetes-helm/).
 
-```bash
-uv run agentevals serve --dev     # Terminal 1
-cd ui && npm install && npm run dev  # Terminal 2 → http://localhost:5173
-```
+## Choosing an evaluation approach
 
-Live-streamed traces appear in the "Local Dev" tab, grouped by session ID.
+agentevals supports multiple ways to score behavior:
 
-## What's Next
+- **built-in metrics** for common trace-derived signals
+- **custom evaluators** for project-specific logic
+- **delegated evaluation backends** such as the initial OpenAI Evals API integration
 
-- [Integrations](/docs/integrations/) — Zero-code, SDK, and CLI/CI integration patterns
-- [Custom Evaluators](/docs/custom-evaluators/) — Build your own evaluators
-- [UI Walkthrough](/docs/ui-walkthrough/) — Deep dive into the web UI
+For architecture guidance, see [Advanced](/docs/advanced/).
